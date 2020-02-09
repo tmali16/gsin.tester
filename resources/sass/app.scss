@@ -1,0 +1,19 @@
+// Fonts
+@import url('https://fonts.googleapis.com/css?family=Nunito');
+
+// Variables
+@import 'variables';
+
+// Bootstrap
+@import '~bootstrap/scss/bootstrap';
+
+
+.answer_hover{
+    padding: 15px;
+    &:hover{       
+        background-color: rgb(221, 221, 221);
+    }    
+}
+.modal-body{
+
+}

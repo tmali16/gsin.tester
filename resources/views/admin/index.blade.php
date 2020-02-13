@@ -7,7 +7,7 @@ Administrator
     @include("nav")
 @endsection
 @section("content")
-<div class="container mt-5">
+<div class="container mt-5" id="admin_">
     <div class="row">
         <div class="col-md-12 ">
             <div class="card rounded-0 shadow-sm border-0">

@@ -34,8 +34,9 @@ class QuestionController extends Controller
             }
         }
         return response()->json(array(
-            "status" => "ok",
-            "message" =>"Добвлено"
-        ));
+                                "status" => "ok",
+                                "message" =>"Добвлено"
+                            ));
     }
+
 }

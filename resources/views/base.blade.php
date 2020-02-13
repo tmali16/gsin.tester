@@ -17,7 +17,7 @@
     </head>
     <body>
         @yield('nav')
-        <div id="app">
+        <div id="app" class="h-100">
             @yield('content')
         </div>
         @yield('script')

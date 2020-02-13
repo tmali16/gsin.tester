@@ -39,8 +39,8 @@ class TestController extends Controller
     public function test(Request $request)  
     {
         $test = Test::count();
-
-        return $test;
+        $quest = Question::count();
+        return array("testCount"=>$test, "AnswerCount"=>$quest);
     }
 
     public function GetQuestion()
@@ -54,5 +54,23 @@ class TestController extends Controller
             'tests' =>$test            
         ];
         return json_encode($ret, JSON_PRETTY_PRINT);
+    }
+    public function tests(Request $request)
+    {
+        $id = $request->id;
+        
+        return Test::where("id",  $id)->with(["Question.Answers"])->get()->toJson();;
+    }
+    public function getSettings(Request $request)
+    {
+        $id = $request->id;
+        $settings = Test::where("id", "=", $id)->with(["Settings"])->first();
+        return $settings;
+    }
+    public function getTestforUser(Request $request)
+    {
+        $id = $request->id;
+        $test = Test::where("id", $id)->with(["Question.Answers"])->first();
+        return $test;
     }
 }

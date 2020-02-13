@@ -7,6 +7,10 @@
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
 
+//font-awsome
+@import 'scss/font-awesome';
+
+@import "toastr";
 
 .answer_hover{
     padding: 15px;
@@ -14,6 +18,12 @@
         background-color: rgb(221, 221, 221);
     }    
 }
-.modal-body{
+
+html, body{
+    height: 100%;
+    margin: 0px;
+}
+#app{
+    height: 100%;
 
 }

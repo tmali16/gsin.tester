@@ -1957,9 +1957,55 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
+  data: function data() {
+    return {
+      questions: [],
+      index: 0,
+      next: 0,
+      prev: 0
+    };
+  },
   mounted: function mounted() {
-    console.log('Component mounted.');
+    this.getQuestion();
+  },
+  methods: {
+    getQuestion: function getQuestion() {
+      var _this = this;
+
+      axios.get("/api/test/get/1").then(function (response) {
+        _this.questions = response.data;
+        console.log(_this.questions);
+      })["catch"](function (error) {
+        toastr.error(error.response.status);
+      });
+    },
+    nextQuest: function nextQuest() {
+      if (this.question.length > this.index) {
+        this.index + 1;
+      }
+    },
+    prevQuest: function prevQuest() {
+      if (this.index >= 1) {
+        this.index - 1;
+      }
+    }
   }
 });
 
@@ -1990,10 +2036,19 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      testCount: 0
+      testBaseData: 0
     };
   },
   mounted: function mounted() {
@@ -2004,7 +2059,7 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       axios.get("api/admin/getCount").then(function (Response) {
-        _this.testCount = Response.data;
+        _this.testBaseData = Response.data;
       })["catch"](function (error) {
         console.log(error);
       });
@@ -2121,15 +2176,109 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      testCount: 0,
+      testBaseData: 0,
       question: "Нет текста",
       answers: [1, 2],
       getData: [],
-      selectedTest: [],
-      retStatus: []
+      selectedTestData: [],
+      retStatus: [],
+      testCount: 1,
+      testSettings: [],
+      quest_count: 0,
+      quest_random: 0,
+      answer_random: 0,
+      test_duration: 0,
+      testDuration: 1
     };
   },
   mounted: function mounted() {
@@ -2140,7 +2289,7 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       axios.get("api/admin/getCount").then(function (Response) {
-        _this.testCount = Response.data;
+        _this.testBaseData = Response.data;
       })["catch"](function (error) {
         console.log(error);
       });
@@ -2151,9 +2300,8 @@ __webpack_require__.r(__webpack_exports__);
       axios.get('/api/admin/get').then(function (response) {
         _this2.getData = response.data;
 
-        _this2.selectTest(0);
+        _this2.selectTest(1);
       })["catch"](function (error) {
-        re = false;
         console.log("!!!!! ERROR !!!! function get STATUS CODE=" + error.response.status + ';  message: ' + error.response.data.message);
       });
     },
@@ -2166,7 +2314,7 @@ __webpack_require__.r(__webpack_exports__);
         data: {
           question: this.question,
           answers: this.getAnswers(),
-          test_id: this.selectedTest.id
+          test_id: this.selectedTestData.id
         }
       }).then(function (response) {
         if (response.data.status == 'ok') {
@@ -2182,8 +2330,16 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     selectTest: function selectTest(i) {
-      this.selectedTest = this.getData.tests[i];
-      console.log(this.selectedTest);
+      var _this4 = this;
+
+      var url = "/api/admin/test/get/" + i;
+      axios.get(url).then(function (response) {
+        _this4.selectedTestData = response.data[0];
+        console.log(_this4.selectedTestData);
+      })["catch"](function (error) {
+        console.log(url);
+        console.log("!!!!! ERROR !!!! function store persona STATUS CODE=" + error.response.status + ';  message: ' + error.response.data.message);
+      });
     },
     getAnswers: function getAnswers() {
       var ret = [];
@@ -2199,6 +2355,65 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       return ret;
+    },
+    getSettings: function getSettings(i) {
+      var _this5 = this;
+
+      axios.get("/api/admin/test/settings/get/" + i).then(function (response) {
+        _this5.testSettings = response.data.settings;
+        _this5.quest_count = _this5.testSettings.quest_count;
+        _this5.quest_random = _this5.testSettings.quest_random;
+        _this5.answer_random = _this5.testSettings.answer_random;
+        _this5.test_duration = _this5.testSettings.duration;
+        _this5.testCount = _this5.quest_count == 0 ? 1 : 0;
+        _this5.testDuration = _this5.test_duration == 0 ? 1 : 0;
+        toastr.success("Загружено", 'Настройки');
+        toastr.options.progressBar = true;
+        toastr.options.hideMethod = 'slideUp';
+      })["catch"](function (error) {});
+    },
+    showSettings: function showSettings(i) {
+      $("#settingsTest").modal("show");
+      this.getSettings(i);
+    },
+    saveSettings: function saveSettings(i) {
+      var _this6 = this;
+
+      axios({
+        url: "/api/admin/test/settings/save/" + i,
+        method: "POST",
+        data: {
+          quest_count: this.quest_count,
+          quest_random: this.quest_random,
+          answer_random: this.answer_random,
+          duration: this.test_duration,
+          test_id: i,
+          id: this.testSettings.id
+        }
+      }).then(function (response) {
+        if (response.data.status == "ok") {
+          _this6.quest_count = 0;
+          _this6.quest_random = 0;
+          _this6.answer_random = 0;
+          _this6.test_duration = 0;
+          _this6.testDuration = 1;
+          _this6.testCount = 1;
+          _this6.retStatus = response.data;
+          toastr.info(_this6.retStatus.message, "Сообшение");
+          $("#settingsTest").modal("hide");
+        }
+      })["catch"](function (error) {
+        toastr.error(error.response.status, 'Inconceivable!');
+      });
+    },
+    chBox: function chBox(i) {
+      if (i == "quest_count") {
+        this.testCount = $("input[name=" + i + "]:checked").val();
+      }
+
+      if (i == "test_duration") {
+        this.testDuration = $("input[name=" + i + "]:checked").val();
+      }
     }
   }
 });
@@ -37560,6 +37775,488 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 
 /***/ }),
 
+/***/ "./node_modules/toastr/toastr.js":
+/*!***************************************!*\
+  !*** ./node_modules/toastr/toastr.js ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*
+ * Toastr
+ * Copyright 2012-2015
+ * Authors: John Papa, Hans Fjällemark, and Tim Ferrell.
+ * All Rights Reserved.
+ * Use, reproduction, distribution, and modification of this code is subject to the terms and
+ * conditions of the MIT license, available at http://www.opensource.org/licenses/mit-license.php
+ *
+ * ARIA Support: Greta Krafsig
+ *
+ * Project: https://github.com/CodeSeven/toastr
+ */
+/* global define */
+(function (define) {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")], __WEBPACK_AMD_DEFINE_RESULT__ = (function ($) {
+        return (function () {
+            var $container;
+            var listener;
+            var toastId = 0;
+            var toastType = {
+                error: 'error',
+                info: 'info',
+                success: 'success',
+                warning: 'warning'
+            };
+
+            var toastr = {
+                clear: clear,
+                remove: remove,
+                error: error,
+                getContainer: getContainer,
+                info: info,
+                options: {},
+                subscribe: subscribe,
+                success: success,
+                version: '2.1.4',
+                warning: warning
+            };
+
+            var previousToast;
+
+            return toastr;
+
+            ////////////////
+
+            function error(message, title, optionsOverride) {
+                return notify({
+                    type: toastType.error,
+                    iconClass: getOptions().iconClasses.error,
+                    message: message,
+                    optionsOverride: optionsOverride,
+                    title: title
+                });
+            }
+
+            function getContainer(options, create) {
+                if (!options) { options = getOptions(); }
+                $container = $('#' + options.containerId);
+                if ($container.length) {
+                    return $container;
+                }
+                if (create) {
+                    $container = createContainer(options);
+                }
+                return $container;
+            }
+
+            function info(message, title, optionsOverride) {
+                return notify({
+                    type: toastType.info,
+                    iconClass: getOptions().iconClasses.info,
+                    message: message,
+                    optionsOverride: optionsOverride,
+                    title: title
+                });
+            }
+
+            function subscribe(callback) {
+                listener = callback;
+            }
+
+            function success(message, title, optionsOverride) {
+                return notify({
+                    type: toastType.success,
+                    iconClass: getOptions().iconClasses.success,
+                    message: message,
+                    optionsOverride: optionsOverride,
+                    title: title
+                });
+            }
+
+            function warning(message, title, optionsOverride) {
+                return notify({
+                    type: toastType.warning,
+                    iconClass: getOptions().iconClasses.warning,
+                    message: message,
+                    optionsOverride: optionsOverride,
+                    title: title
+                });
+            }
+
+            function clear($toastElement, clearOptions) {
+                var options = getOptions();
+                if (!$container) { getContainer(options); }
+                if (!clearToast($toastElement, options, clearOptions)) {
+                    clearContainer(options);
+                }
+            }
+
+            function remove($toastElement) {
+                var options = getOptions();
+                if (!$container) { getContainer(options); }
+                if ($toastElement && $(':focus', $toastElement).length === 0) {
+                    removeToast($toastElement);
+                    return;
+                }
+                if ($container.children().length) {
+                    $container.remove();
+                }
+            }
+
+            // internal functions
+
+            function clearContainer (options) {
+                var toastsToClear = $container.children();
+                for (var i = toastsToClear.length - 1; i >= 0; i--) {
+                    clearToast($(toastsToClear[i]), options);
+                }
+            }
+
+            function clearToast ($toastElement, options, clearOptions) {
+                var force = clearOptions && clearOptions.force ? clearOptions.force : false;
+                if ($toastElement && (force || $(':focus', $toastElement).length === 0)) {
+                    $toastElement[options.hideMethod]({
+                        duration: options.hideDuration,
+                        easing: options.hideEasing,
+                        complete: function () { removeToast($toastElement); }
+                    });
+                    return true;
+                }
+                return false;
+            }
+
+            function createContainer(options) {
+                $container = $('<div/>')
+                    .attr('id', options.containerId)
+                    .addClass(options.positionClass);
+
+                $container.appendTo($(options.target));
+                return $container;
+            }
+
+            function getDefaults() {
+                return {
+                    tapToDismiss: true,
+                    toastClass: 'toast',
+                    containerId: 'toast-container',
+                    debug: false,
+
+                    showMethod: 'fadeIn', //fadeIn, slideDown, and show are built into jQuery
+                    showDuration: 300,
+                    showEasing: 'swing', //swing and linear are built into jQuery
+                    onShown: undefined,
+                    hideMethod: 'fadeOut',
+                    hideDuration: 1000,
+                    hideEasing: 'swing',
+                    onHidden: undefined,
+                    closeMethod: false,
+                    closeDuration: false,
+                    closeEasing: false,
+                    closeOnHover: true,
+
+                    extendedTimeOut: 1000,
+                    iconClasses: {
+                        error: 'toast-error',
+                        info: 'toast-info',
+                        success: 'toast-success',
+                        warning: 'toast-warning'
+                    },
+                    iconClass: 'toast-info',
+                    positionClass: 'toast-top-right',
+                    timeOut: 5000, // Set timeOut and extendedTimeOut to 0 to make it sticky
+                    titleClass: 'toast-title',
+                    messageClass: 'toast-message',
+                    escapeHtml: false,
+                    target: 'body',
+                    closeHtml: '<button type="button">&times;</button>',
+                    closeClass: 'toast-close-button',
+                    newestOnTop: true,
+                    preventDuplicates: false,
+                    progressBar: false,
+                    progressClass: 'toast-progress',
+                    rtl: false
+                };
+            }
+
+            function publish(args) {
+                if (!listener) { return; }
+                listener(args);
+            }
+
+            function notify(map) {
+                var options = getOptions();
+                var iconClass = map.iconClass || options.iconClass;
+
+                if (typeof (map.optionsOverride) !== 'undefined') {
+                    options = $.extend(options, map.optionsOverride);
+                    iconClass = map.optionsOverride.iconClass || iconClass;
+                }
+
+                if (shouldExit(options, map)) { return; }
+
+                toastId++;
+
+                $container = getContainer(options, true);
+
+                var intervalId = null;
+                var $toastElement = $('<div/>');
+                var $titleElement = $('<div/>');
+                var $messageElement = $('<div/>');
+                var $progressElement = $('<div/>');
+                var $closeElement = $(options.closeHtml);
+                var progressBar = {
+                    intervalId: null,
+                    hideEta: null,
+                    maxHideTime: null
+                };
+                var response = {
+                    toastId: toastId,
+                    state: 'visible',
+                    startTime: new Date(),
+                    options: options,
+                    map: map
+                };
+
+                personalizeToast();
+
+                displayToast();
+
+                handleEvents();
+
+                publish(response);
+
+                if (options.debug && console) {
+                    console.log(response);
+                }
+
+                return $toastElement;
+
+                function escapeHtml(source) {
+                    if (source == null) {
+                        source = '';
+                    }
+
+                    return source
+                        .replace(/&/g, '&amp;')
+                        .replace(/"/g, '&quot;')
+                        .replace(/'/g, '&#39;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;');
+                }
+
+                function personalizeToast() {
+                    setIcon();
+                    setTitle();
+                    setMessage();
+                    setCloseButton();
+                    setProgressBar();
+                    setRTL();
+                    setSequence();
+                    setAria();
+                }
+
+                function setAria() {
+                    var ariaValue = '';
+                    switch (map.iconClass) {
+                        case 'toast-success':
+                        case 'toast-info':
+                            ariaValue =  'polite';
+                            break;
+                        default:
+                            ariaValue = 'assertive';
+                    }
+                    $toastElement.attr('aria-live', ariaValue);
+                }
+
+                function handleEvents() {
+                    if (options.closeOnHover) {
+                        $toastElement.hover(stickAround, delayedHideToast);
+                    }
+
+                    if (!options.onclick && options.tapToDismiss) {
+                        $toastElement.click(hideToast);
+                    }
+
+                    if (options.closeButton && $closeElement) {
+                        $closeElement.click(function (event) {
+                            if (event.stopPropagation) {
+                                event.stopPropagation();
+                            } else if (event.cancelBubble !== undefined && event.cancelBubble !== true) {
+                                event.cancelBubble = true;
+                            }
+
+                            if (options.onCloseClick) {
+                                options.onCloseClick(event);
+                            }
+
+                            hideToast(true);
+                        });
+                    }
+
+                    if (options.onclick) {
+                        $toastElement.click(function (event) {
+                            options.onclick(event);
+                            hideToast();
+                        });
+                    }
+                }
+
+                function displayToast() {
+                    $toastElement.hide();
+
+                    $toastElement[options.showMethod](
+                        {duration: options.showDuration, easing: options.showEasing, complete: options.onShown}
+                    );
+
+                    if (options.timeOut > 0) {
+                        intervalId = setTimeout(hideToast, options.timeOut);
+                        progressBar.maxHideTime = parseFloat(options.timeOut);
+                        progressBar.hideEta = new Date().getTime() + progressBar.maxHideTime;
+                        if (options.progressBar) {
+                            progressBar.intervalId = setInterval(updateProgress, 10);
+                        }
+                    }
+                }
+
+                function setIcon() {
+                    if (map.iconClass) {
+                        $toastElement.addClass(options.toastClass).addClass(iconClass);
+                    }
+                }
+
+                function setSequence() {
+                    if (options.newestOnTop) {
+                        $container.prepend($toastElement);
+                    } else {
+                        $container.append($toastElement);
+                    }
+                }
+
+                function setTitle() {
+                    if (map.title) {
+                        var suffix = map.title;
+                        if (options.escapeHtml) {
+                            suffix = escapeHtml(map.title);
+                        }
+                        $titleElement.append(suffix).addClass(options.titleClass);
+                        $toastElement.append($titleElement);
+                    }
+                }
+
+                function setMessage() {
+                    if (map.message) {
+                        var suffix = map.message;
+                        if (options.escapeHtml) {
+                            suffix = escapeHtml(map.message);
+                        }
+                        $messageElement.append(suffix).addClass(options.messageClass);
+                        $toastElement.append($messageElement);
+                    }
+                }
+
+                function setCloseButton() {
+                    if (options.closeButton) {
+                        $closeElement.addClass(options.closeClass).attr('role', 'button');
+                        $toastElement.prepend($closeElement);
+                    }
+                }
+
+                function setProgressBar() {
+                    if (options.progressBar) {
+                        $progressElement.addClass(options.progressClass);
+                        $toastElement.prepend($progressElement);
+                    }
+                }
+
+                function setRTL() {
+                    if (options.rtl) {
+                        $toastElement.addClass('rtl');
+                    }
+                }
+
+                function shouldExit(options, map) {
+                    if (options.preventDuplicates) {
+                        if (map.message === previousToast) {
+                            return true;
+                        } else {
+                            previousToast = map.message;
+                        }
+                    }
+                    return false;
+                }
+
+                function hideToast(override) {
+                    var method = override && options.closeMethod !== false ? options.closeMethod : options.hideMethod;
+                    var duration = override && options.closeDuration !== false ?
+                        options.closeDuration : options.hideDuration;
+                    var easing = override && options.closeEasing !== false ? options.closeEasing : options.hideEasing;
+                    if ($(':focus', $toastElement).length && !override) {
+                        return;
+                    }
+                    clearTimeout(progressBar.intervalId);
+                    return $toastElement[method]({
+                        duration: duration,
+                        easing: easing,
+                        complete: function () {
+                            removeToast($toastElement);
+                            clearTimeout(intervalId);
+                            if (options.onHidden && response.state !== 'hidden') {
+                                options.onHidden();
+                            }
+                            response.state = 'hidden';
+                            response.endTime = new Date();
+                            publish(response);
+                        }
+                    });
+                }
+
+                function delayedHideToast() {
+                    if (options.timeOut > 0 || options.extendedTimeOut > 0) {
+                        intervalId = setTimeout(hideToast, options.extendedTimeOut);
+                        progressBar.maxHideTime = parseFloat(options.extendedTimeOut);
+                        progressBar.hideEta = new Date().getTime() + progressBar.maxHideTime;
+                    }
+                }
+
+                function stickAround() {
+                    clearTimeout(intervalId);
+                    progressBar.hideEta = 0;
+                    $toastElement.stop(true, true)[options.showMethod](
+                        {duration: options.showDuration, easing: options.showEasing}
+                    );
+                }
+
+                function updateProgress() {
+                    var percentage = ((progressBar.hideEta - (new Date().getTime())) / progressBar.maxHideTime) * 100;
+                    $progressElement.width(percentage + '%');
+                }
+            }
+
+            function getOptions() {
+                return $.extend({}, getDefaults(), toastr.options);
+            }
+
+            function removeToast($toastElement) {
+                if (!$container) { $container = getContainer(); }
+                if ($toastElement.is(':visible')) {
+                    return;
+                }
+                $toastElement.remove();
+                $toastElement = null;
+                if ($container.children().length === 0) {
+                    $container.remove();
+                    previousToast = undefined;
+                }
+            }
+
+        })();
+    }).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+}(__webpack_require__(/*! !webpack amd define */ "./node_modules/webpack/buildin/amd-define.js")));
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ExampleComponent.vue?vue&type=template&id=299e239e&":
 /*!*******************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/ExampleComponent.vue?vue&type=template&id=299e239e& ***!
@@ -37622,29 +38319,102 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c("div", { staticClass: "container-fluid p-0 h-100 bg-dark" }, [
+    _c("div", { staticClass: "row h-100 justify-content-center " }, [
+      _c("div", { staticClass: "col-md-8 d-flex align-items-center " }, [
+        _c("div", { staticClass: "card rounded-0 w-100  h-75" }, [
+          _c("div", { staticClass: "card-body" }, [
+            _c("div", { staticClass: "container" }, [
+              _c(
+                "div",
+                { staticClass: "ml-5 mr-5" },
+                [
+                  _vm._m(0),
+                  _vm._v(" "),
+                  _c("hr"),
+                  _vm._v(" "),
+                  _vm._l(_vm.questions.question[_vm.index].answers, function(
+                    item,
+                    i
+                  ) {
+                    return _c("div", { key: i, staticClass: "form-check" }, [
+                      _c("input", {
+                        staticClass: "form-check-input",
+                        attrs: {
+                          type: "radio",
+                          name: "exampleRadios",
+                          id: "exampleRadios1",
+                          value: "option1",
+                          checked: ""
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c(
+                        "label",
+                        {
+                          staticClass: "form-check-label",
+                          attrs: { for: "exampleRadios1" }
+                        },
+                        [
+                          _vm._v(
+                            "\n                                    " +
+                              _vm._s(item.question) +
+                              "\n                                "
+                          )
+                        ]
+                      )
+                    ])
+                  })
+                ],
+                2
+              )
+            ])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "card-footer text-center" }, [
+            _c(
+              "button",
+              {
+                staticClass:
+                  "btn w-25 pl-3 pr-3 btn-sm btn-secondary rounded-0",
+                on: {
+                  click: function($event) {
+                    return _vm.prevQuest()
+                  }
+                }
+              },
+              [_vm._v("← вернуться")]
+            ),
+            _vm._v(" "),
+            _c("button", { staticClass: "btn w-25 btn-success rounded-0" }, [
+              _vm._v("Prinyat")
+            ]),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "btn w-25 btn-sm btn-secondary rounded-0",
+                on: {
+                  click: function($event) {
+                    return _vm.nextQuest()
+                  }
+                }
+              },
+              [_vm._v("Пропустить →")]
+            )
+          ])
+        ])
+      ])
+    ])
+  ])
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "container" }, [
-      _c("div", { staticClass: "row justify-content-center" }, [
-        _c("div", { staticClass: "col-md-8" }, [
-          _c("div", { staticClass: "card" }, [
-            _c("div", { staticClass: "card-header" }, [
-              _vm._v("Example Component")
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-body" }, [
-              _vm._v(
-                "\n                    I'm an example component.\n                "
-              )
-            ])
-          ])
-        ])
-      ])
+    return _c("div", { staticClass: "header mt-3 mb-4" }, [
+      _c("span", [_vm._v("Test")])
     ])
   }
 ]
@@ -37675,12 +38445,31 @@ var render = function() {
         _c("div", { staticClass: "card rounded-0 border-1" }, [
           _c(
             "div",
-            { staticClass: "card-header bg-info  text-light pt-1 pb-1" },
+            {
+              staticClass:
+                "card-header bg-info  text-light pt-1 pb-1 rounded-0 shadow-1"
+            },
             [_vm._v("Всего тестов")]
           ),
           _vm._v(" "),
           _c("div", { staticClass: "card-body text-center" }, [
-            _c("span", {}, [_vm._v(" " + _vm._s(_vm.testCount))])
+            _c("span", {}, [_vm._v(" " + _vm._s(_vm.testBaseData.testCount))])
+          ])
+        ])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-md-2" }, [
+        _c("div", { staticClass: "card rounded-0 border-1" }, [
+          _c(
+            "div",
+            {
+              staticClass: "card-header bg-info  text-light pt-1 pb-1 rounded-0"
+            },
+            [_vm._v("Всего вопросов")]
+          ),
+          _vm._v(" "),
+          _c("div", { staticClass: "card-body text-center" }, [
+            _c("span", {}, [_vm._v(" " + _vm._s(_vm.testBaseData.AnswerCount))])
           ])
         ])
       ])
@@ -37713,24 +38502,24 @@ var render = function() {
     _c("div", { staticClass: "row" }, [
       _c("div", { staticClass: "col-md-3" }, [
         _c("div", { staticClass: "card rounded-0 border-1 shadow-1" }, [
-          _c("div", { staticClass: "card-body text-center" }, [
+          _c("div", { staticClass: "card-body " }, [
             _c(
               "div",
-              { staticClass: "col-12" },
+              { staticClass: "col-12 text-center" },
               [
                 _c("h4", [_vm._v("Тесты")]),
                 _vm._v(" "),
                 _c("hr"),
                 _vm._v(" "),
                 _vm._l(_vm.getData.tests, function(item, i) {
-                  return _c("div", { key: i }, [
+                  return _c("div", { key: i, staticClass: "col-12" }, [
                     _c(
                       "span",
                       {
-                        staticClass: "btn col btn-link",
+                        staticClass: "btn btn-link text-left col-8 p-0 mb-3",
                         on: {
                           click: function($event) {
-                            return _vm.selectTest(i)
+                            return _vm.selectTest(item.id)
                           }
                         }
                       },
@@ -37740,6 +38529,25 @@ var render = function() {
                             _vm._s(item.name) +
                             "\n                        "
                         )
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        staticClass:
+                          "btn btn-sm rounded-0 btn-success col-3 p-0 mb-3",
+                        on: {
+                          click: function($event) {
+                            return _vm.showSettings(item.id)
+                          }
+                        }
+                      },
+                      [
+                        _c("i", {
+                          staticClass: "fa fa-cog",
+                          attrs: { "aria-hidden": "true" }
+                        })
                       ]
                     )
                   ])
@@ -37756,7 +38564,7 @@ var render = function() {
           _c("div", { staticClass: "card-body" }, [
             _c("div", { staticClass: "col-12 text-center border-bottom-1" }, [
               _c("label", { attrs: { for: "" } }, [
-                _vm._v("Тест " + _vm._s(_vm.selectedTest.name))
+                _vm._v("Тест " + _vm._s(_vm.selectedTestData.name))
               ])
             ]),
             _vm._v(" "),
@@ -37767,13 +38575,31 @@ var render = function() {
               _vm._v(" "),
               _c(
                 "tbody",
-                _vm._l(_vm.getData.question, function(item, i) {
+                _vm._l(_vm.selectedTestData.question, function(item, i) {
                   return _c("tr", { key: i }, [
-                    _c("th", { attrs: { scope: "row" } }, [
-                      _vm._v(_vm._s(i++))
+                    _c("th", { staticClass: "m-0", attrs: { scope: "row" } }, [
+                      _vm._v(_vm._s(i + 1))
                     ]),
                     _vm._v(" "),
-                    _c("th", [_vm._v(_vm._s(item.question))])
+                    _c("th", { staticClass: "m-0" }, [
+                      _vm._v(_vm._s(item.question))
+                    ]),
+                    _vm._v(" "),
+                    _c("th", [
+                      _c(
+                        "ul",
+                        { staticClass: "m-0" },
+                        _vm._l(item.answers, function(it, i) {
+                          return _c("li", { key: i }, [
+                            _vm._v(_vm._s(it.answer) + " "),
+                            it.right == 1 ? _c("span", [_vm._v("*")]) : _vm._e()
+                          ])
+                        }),
+                        0
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _vm._m(1, true)
                   ])
                 }),
                 0
@@ -37827,7 +38653,7 @@ var render = function() {
                 staticClass: "modal-content rounded-0 modal-dialog-scrollable"
               },
               [
-                _vm._m(1),
+                _vm._m(2),
                 _vm._v(" "),
                 _c("div", { staticClass: "modal-body " }, [
                   _vm._v(
@@ -37918,7 +38744,7 @@ var render = function() {
                   ),
                   _vm._v(" "),
                   _c("div", { staticClass: "form-group col" }, [
-                    _vm.answers.length >= 5
+                    _vm.answers.length <= 5
                       ? _c(
                           "button",
                           {
@@ -37968,6 +38794,390 @@ var render = function() {
           ]
         )
       ]
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      {
+        staticClass: "modal fade ",
+        attrs: {
+          id: "settingsTest",
+          tabindex: "-1",
+          role: "dialog",
+          "aria-labelledby": "settingsTest",
+          "aria-hidden": "true"
+        }
+      },
+      [
+        _c(
+          "div",
+          {
+            staticClass: "modal-dialog modal-dialog-centered",
+            attrs: { role: "document" }
+          },
+          [
+            _c(
+              "div",
+              {
+                staticClass: "modal-content rounded-0 modal-dialog-scrollable"
+              },
+              [
+                _vm._m(4),
+                _vm._v(" "),
+                _c("div", { staticClass: "modal-body row" }, [
+                  _c("div", { staticClass: "form-group col-md-12 " }, [
+                    _c("label", { staticClass: "col", attrs: { for: "" } }, [
+                      _vm._v("Количество задаваемых вопросв")
+                    ]),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-check form-check-inline col" },
+                      [
+                        _c("input", {
+                          staticClass: "form-check-input",
+                          attrs: {
+                            type: "radio",
+                            name: "quest_count",
+                            id: "testCount1",
+                            value: "1"
+                          },
+                          domProps: { checked: _vm.quest_count == 0 },
+                          on: {
+                            change: function($event) {
+                              return _vm.chBox("quest_count")
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c(
+                          "label",
+                          {
+                            staticClass: "form-check-label",
+                            attrs: { for: "testCount1" }
+                          },
+                          [_vm._v("Все вопросы")]
+                        )
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-check form-check-inline col" },
+                      [
+                        _c("input", {
+                          staticClass: "form-check-input",
+                          attrs: {
+                            type: "radio",
+                            name: "quest_count",
+                            id: "testCount2",
+                            value: "0"
+                          },
+                          domProps: { checked: _vm.quest_count > 0 },
+                          on: {
+                            change: function($event) {
+                              return _vm.chBox("quest_count")
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c(
+                          "label",
+                          {
+                            staticClass: "form-check-label",
+                            attrs: { for: "testCount2" }
+                          },
+                          [
+                            _vm._v(
+                              "\n                            Случайные\n                            "
+                            ),
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.quest_count,
+                                  expression: "quest_count"
+                                }
+                              ],
+                              staticClass:
+                                "form-controll form-controll-sm rounded-0",
+                              staticStyle: { width: "50px" },
+                              attrs: {
+                                type: "number",
+                                disabled: _vm.testCount == 1
+                              },
+                              domProps: { value: _vm.quest_count },
+                              on: {
+                                input: function($event) {
+                                  if ($event.target.composing) {
+                                    return
+                                  }
+                                  _vm.quest_count = $event.target.value
+                                }
+                              }
+                            })
+                          ]
+                        )
+                      ]
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "form-group col-sm-5 " }, [
+                    _c("label", { staticClass: "col", attrs: { for: "" } }, [
+                      _vm._v("Задавать вопросы")
+                    ]),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-check form-check-inline col" },
+                      [
+                        _c("input", {
+                          staticClass: "form-check-input",
+                          attrs: {
+                            type: "radio",
+                            name: "quest_random",
+                            id: "quest_random1",
+                            value: "1"
+                          },
+                          domProps: { checked: _vm.quest_random == 0 }
+                        }),
+                        _vm._v(" "),
+                        _c(
+                          "label",
+                          {
+                            staticClass: "form-check-label",
+                            attrs: { for: "quest_random1" }
+                          },
+                          [_vm._v("В случайном порядке")]
+                        )
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-check form-check-inline col" },
+                      [
+                        _c("input", {
+                          staticClass: "form-check-input",
+                          attrs: {
+                            type: "radio",
+                            name: "quest_random",
+                            id: "quest_random2",
+                            value: "0"
+                          },
+                          domProps: { checked: _vm.quest_random == 1 }
+                        }),
+                        _vm._v(" "),
+                        _c(
+                          "label",
+                          {
+                            staticClass: "form-check-label",
+                            attrs: { for: "quest_random2" }
+                          },
+                          [
+                            _vm._v(
+                              "\n                            По порядку\n                        "
+                            )
+                          ]
+                        )
+                      ]
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "form-group col-sm-5 " }, [
+                    _c("label", { staticClass: "col", attrs: { for: "" } }, [
+                      _vm._v("Предлогать ответы")
+                    ]),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-check form-check-inline col" },
+                      [
+                        _c("input", {
+                          staticClass: "form-check-input",
+                          attrs: {
+                            type: "radio",
+                            name: "answer_random",
+                            id: "answer_random1",
+                            value: "1"
+                          },
+                          domProps: { checked: _vm.answer_random == 0 }
+                        }),
+                        _vm._v(" "),
+                        _c(
+                          "label",
+                          {
+                            staticClass: "form-check-label",
+                            attrs: { for: "answer_random1" }
+                          },
+                          [_vm._v("В случайном порядке")]
+                        )
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-check form-check-inline col" },
+                      [
+                        _c("input", {
+                          staticClass: "form-check-input",
+                          attrs: {
+                            type: "radio",
+                            name: "answer_random",
+                            id: "answer_random2",
+                            value: "0"
+                          },
+                          domProps: { checked: _vm.answer_random == 1 }
+                        }),
+                        _vm._v(" "),
+                        _c(
+                          "label",
+                          {
+                            staticClass: "form-check-label",
+                            attrs: { for: "answer_random2" }
+                          },
+                          [
+                            _vm._v(
+                              "\n                            По порядку\n                        "
+                            )
+                          ]
+                        )
+                      ]
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "form-group col-md-12 " }, [
+                    _c("label", { staticClass: "col", attrs: { for: "" } }, [
+                      _vm._v("Время")
+                    ]),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-check form-check-inline col" },
+                      [
+                        _c("input", {
+                          staticClass: "form-check-input",
+                          attrs: {
+                            type: "radio",
+                            name: "test_duration",
+                            id: "test_duration1",
+                            value: "1"
+                          },
+                          domProps: { checked: _vm.test_duration == 0 },
+                          on: {
+                            change: function($event) {
+                              return _vm.chBox("test_duration")
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c(
+                          "label",
+                          {
+                            staticClass: "form-check-label",
+                            attrs: { for: "test_duration1" }
+                          },
+                          [_vm._v("Не ограничивать")]
+                        )
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-check form-check-inline col" },
+                      [
+                        _c("input", {
+                          staticClass: "form-check-input",
+                          attrs: {
+                            type: "radio",
+                            name: "test_duration",
+                            id: "test_duration2",
+                            value: "0"
+                          },
+                          domProps: { checked: _vm.test_duration >= 1 },
+                          on: {
+                            change: function($event) {
+                              return _vm.chBox("test_duration")
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c(
+                          "label",
+                          {
+                            staticClass: "form-check-label",
+                            attrs: { for: "test_duration2" }
+                          },
+                          [
+                            _vm._v(
+                              "\n                            Ограничить время на выполнение теста\n                            "
+                            ),
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.test_duration,
+                                  expression: "test_duration"
+                                }
+                              ],
+                              staticClass:
+                                "form-controll form-controll-sm rounded-0",
+                              staticStyle: { width: "50px" },
+                              attrs: {
+                                type: "number",
+                                disabled: _vm.testDuration == 1
+                              },
+                              domProps: { value: _vm.test_duration },
+                              on: {
+                                input: function($event) {
+                                  if ($event.target.composing) {
+                                    return
+                                  }
+                                  _vm.test_duration = $event.target.value
+                                }
+                              }
+                            }),
+                            _vm._v(
+                              "\n                            минутами\n                        "
+                            )
+                          ]
+                        )
+                      ]
+                    )
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "modal-footer" }, [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-secondary",
+                      attrs: { type: "button", "data-dismiss": "modal" }
+                    },
+                    [_vm._v("закрыть")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-primary",
+                      attrs: { type: "button" },
+                      on: {
+                        click: function($event) {
+                          return _vm.saveSettings(_vm.testSettings.test_id)
+                        }
+                      }
+                    },
+                    [_vm._v("Сохранить")]
+                  )
+                ])
+              ]
+            )
+          ]
+        )
+      ]
     )
   ])
 }
@@ -37986,9 +39196,35 @@ var staticRenderFns = [
         _vm._v(" "),
         _c("th", { staticClass: "pt-1 pb-1", attrs: { scope: "col" } }, [
           _vm._v("Вопросы")
+        ]),
+        _vm._v(" "),
+        _c("th", { staticClass: "pt-1 pb-1", attrs: { scope: "col" } }, [
+          _vm._v("ответы")
+        ]),
+        _vm._v(" "),
+        _c("th", { staticClass: "pt-1 pb-1", attrs: { scope: "col" } }, [
+          _vm._v("действие")
         ])
       ])
     ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "th",
+      { staticClass: "text-center m-0", attrs: { width: "180" } },
+      [
+        _c("button", { staticClass: "btn btn-sm rounded-0 btn-info" }, [
+          _vm._v("Изменить")
+        ]),
+        _vm._v(" "),
+        _c("button", { staticClass: "btn btn-sm rounded-0 btn-danger" }, [
+          _vm._v("Улалить")
+        ])
+      ]
+    )
   },
   function() {
     var _vm = this
@@ -38027,6 +39263,34 @@ var staticRenderFns = [
       { staticClass: "form-control", attrs: { id: "ques_test" } },
       [_c("option", { attrs: { selected: "" } }, [_vm._v("Choose...")])]
     )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-header p-2" }, [
+      _c(
+        "h5",
+        {
+          staticClass: "modal-title",
+          attrs: { id: "exampleModalCenterTitle" }
+        },
+        [_vm._v("Настройки теста")]
+      ),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          staticClass: "close",
+          attrs: {
+            type: "button",
+            "data-dismiss": "modal",
+            "aria-label": "Close"
+          }
+        },
+        [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+      )
+    ])
   }
 ]
 render._withStripped = true
@@ -50128,6 +51392,20 @@ if (false) {} else {
 
 /***/ }),
 
+/***/ "./node_modules/webpack/buildin/amd-define.js":
+/*!***************************************!*\
+  !*** (webpack)/buildin/amd-define.js ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = function() {
+	throw new Error("define cannot be used indirect");
+};
+
+
+/***/ }),
+
 /***/ "./node_modules/webpack/buildin/global.js":
 /*!***********************************!*\
   !*** (webpack)/buildin/global.js ***!
@@ -50262,6 +51540,7 @@ try {
 
 
 window.axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+window.toastr = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 /**
  * Echo exposes an expressive API for subscribing to channels and listening

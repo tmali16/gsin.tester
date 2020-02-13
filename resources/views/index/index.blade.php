@@ -5,11 +5,6 @@ Index page
 @endsection
 
 
-
 @section("content")
-<div class="container" id="app">
-    <div class="row">
-        <index-component></index-component>
-    </div>
-</div>
+    <index-component></index-component>
 @endsection

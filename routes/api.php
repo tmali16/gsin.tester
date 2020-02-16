@@ -21,9 +21,11 @@ Route::get('admin/getCount', "TestController@test");
 Route::get('admin/get', "TestController@GetQuestion");
 Route::post('admin/question/new', "QuestionController@Newquestion");
 Route::get("admin/test/get/{id}", "TestController@tests");
+Route::get("admin/test/all", "TestController@getAllTests");
 Route::get("admin/test/settings/get/{id}", "TestController@getSettings");
 Route::post("admin/test/settings/save/{id}", "SettingsController@saveSettings");
 
 // user
 
 Route::get("/test/get/{id}", "TestController@getTestforUser");
+Route::post("/test/answer/{id}", "TestController@putAnswerUser");

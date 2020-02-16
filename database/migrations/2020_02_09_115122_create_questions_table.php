@@ -17,6 +17,7 @@ class CreateQuestionsTable extends Migration
             $table->bigIncrements('id');
             $table->bigInteger('type_id')->unsigned()->index();
             $table->string('question', 200)->nullable()->default(null);
+            $table->boolean('view')->default(true);
             $table->bigInteger('test_id')->unsigned()->index();
         });
         Schema::table('questions', function (Blueprint $table){

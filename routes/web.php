@@ -17,6 +17,7 @@ Route::get('/', "IndexController@Index");
 Route::get('admin/', "AdminController@Index")->name('admin_index');
 Route::post('admin/new', "TestController@Newtest")->name('new_test');
 Route::get('admin/tests', "TestController@New_question")->name('new_question');
+Route::get('admin/testing', "AdminController@addTesting")->name('new_testing');
 
-
+Route::get("admin/test/get/all", "TestController@getAllTests");
 Route::get('/home', 'HomeController@index')->name('home');

@@ -18,4 +18,10 @@ class AdminController extends Controller
     {
         return view("admin.index");
     }
+
+    public function addTesting(Request $request)
+    {
+        
+        return view("admin.testing");
+    }
 }

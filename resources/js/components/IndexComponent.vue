@@ -4,25 +4,35 @@
             <div class="col-md-8 d-flex align-items-center ">
                 <div class="card rounded-0 w-100  h-75">
                     <div class="card-body">
-                        <div class="container">
-                            <div class="ml-5 mr-5">
-                                <div class="header mt-3 mb-4">
-                                    <span>Test</span>
-                                </div>
-                                <hr>
-                                <div class="form-check" v-for="(item, i) in questions.question[index].answers" :key="i">
-                                    <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1" checked>
-                                    <label class="form-check-label" for="exampleRadios1">
-                                        {{item.question}}
-                                    </label>
-                                </div>
-                            </div>
+                        <div class="w-100 mt-1 mb-3 text-center " style="border-bottom: 1px solid">
+                            <span class=" badge budge-success">{{active +" / "+ countQuest}}</span>
                         </div>
+                        <div  class="questions">
+                            <transition-group  
+                                name="slide"
+                                mode="out-in"
+                                class="question">
+                                <div class="question" v-for="(item, i) in test.question" v-show="active==(i+1)" :key="i">
+                                    
+                                    <div class="header mt-2 m2-4">
+                                        <span>{{item.question}}</span>
+                                    </div>
+                                    <hr class="m-1">
+                                    <div class="form-check variant" v-for="(answer, ind) in item.answers" :key="ind">
+                                        <input class="form-check-input" type="radio" :name="'exampleRadios'+i" :id="'exampleRadios'+answer.id+i" value="1" >
+                                        <label class="form-check-label col" :for="'exampleRadios'+answer.id+i">
+                                        {{answer.answer}}
+                                        </label>
+                                    </div>
+                                    
+                                </div>
+                            </transition-group>
+                        </div >
                     </div>
                     <div class="card-footer text-center">
-                        <button class="btn w-25 pl-3 pr-3 btn-sm btn-secondary rounded-0" @click="prevQuest()">&larr; вернуться</button>
+                        <button class="btn w-25 pl-3 pr-3 btn-sm btn-secondary rounded-0" @click="moveQuest(-1)">&larr; вернуться</button>
                         <button class="btn w-25 btn-success rounded-0">Prinyat</button>
-                        <button class="btn w-25 btn-sm btn-secondary rounded-0" @click="nextQuest()">Пропустить &rarr;</button>
+                        <button class="btn w-25 btn-sm btn-secondary rounded-0" @click="moveQuest(1)">Пропустить &rarr;</button>
                     </div>
                 </div>
             </div>
@@ -31,37 +41,51 @@
 </template>
 
 <script>
+    
     export default {
         data() {
             return {
-                questions: [],
+                test: [],
+                countQuest: 0,
                 index: 0,
                 next: 0,
-                prev: 0
+                prev: 0,
+                active: 1,
+                slides: 0,
             }
         },
-        mounted() {
+        mounted() {            
             this.getQuestion()
+            // this.reInit()
         },
         methods: {
             getQuestion: function(){
                 axios.get("/api/test/get/1").then((response)=>{
-                    this.questions = response.data
-                    console.log(this.questions)
+                    this.test = response.data
+                    this.countQuest = this.test.question.length
                 }).catch((error)=>{
-                    toastr.error(error.response.status)
+                    toastr.error(error.response)
+                    console.log(error)
                 })
             },
-            nextQuest: function () {
-                if(this.question.length > this.index){
-                    this.index+1
-                }
-                
+            sendAnswer(question_id, answer_id){
+                axios({
+                    method: "POST",
+                    url: "/api/test/answer/"+test_id,
+                    data:{
+                        question_id: question_id,
+                        answer_id: answer_id
+                    }
+                }).then((response)=>{
+                    toastr.error(response.error.data.message);
+                })
             },
-            prevQuest: function () {
-                if(this.index >=1){
-                    this.index-1
-                }
+            moveQuest: function (a) {
+                let newAct
+                const newInd = this.active + a
+                if(newInd > this.test.question.length) newAct=1
+                if(newInd === 0)newAct = this.test.question.length
+                this.active = newAct || newInd                
             }
         },
     }

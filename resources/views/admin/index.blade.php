@@ -12,35 +12,36 @@ Administrator
         <div class="col-md-12 ">
             <div class="card rounded-0 shadow-sm border-0">
                 <div class="card-body">
-										@if ($errors->any())
-												<div class="alert alert-danger">
-														<ul>
-																@foreach ($errors->all() as $error)
-																		<li>{{ $error }}</li>
-																@endforeach
-														</ul>
-												</div>
-										@endif
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     <dashboard-component></dashboard-component>
 
-                    <div class="row">                        
+                    <div class="col">                        
                         <!-- Button trigger modal -->
-                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+                        <button type="button" class="btn btn-primary rounded-0" data-toggle="modal" data-target="#AddTest">
                             Создать тест
                         </button>
                     </div>
                 </div>
-						</div>
-						<div class="card rounded-0 shadow-sm border-0">
-							<div class="card-body">
-								<a href="" class="btn-link"></a>
-							</div>
-						</div>
+            </div>
+            <div class="card rounded-0 shadow-sm border-0">
+                <div class="card-body">
+                    <a href="" class="btn-link"></a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
 <!-- Modal -->
-<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<div class="modal fade" id="AddTest" tabindex="-1" role="dialog" aria-labelledby="AddTest" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -51,8 +52,7 @@ Administrator
         </div>
         <div class="modal-body">
             <form action="{{route("new_test")}}" method="post">
-								@csrf
-								
+                @csrf								
                 <div class="form-group col">
                     <label for="ques_test">Название теста</label>
                     <input type="text" id="test_name" class="form-control rounded-0" name="name_test" required/>
@@ -66,7 +66,7 @@ Administrator
                 <button href="" class="btn btn-sm btn-success">
                     Создать
                 </button>
-          		</form>
+            </form>
         </div>
       </div>
     </div>

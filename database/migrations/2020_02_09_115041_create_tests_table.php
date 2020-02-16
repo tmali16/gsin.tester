@@ -17,6 +17,7 @@ class CreateTestsTable extends Migration
             $table->bigIncrements('id');
             $table->string("name");
             $table->string("description", 500)->nullable()->default(null);
+            $table->boolean("enable")->default(false);
             $table->bigInteger('user_id')->unsigned()->index();
             $table->timestamps();
         });

@@ -6,9 +6,11 @@
 
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
+// @import '~slick-carousel/slick/slick-theme';
+@import '~slick-carousel/slick/slick';
 
 //font-awsome
-@import 'scss/font-awesome';
+//@import 'scss/font-awesome';
 
 @import "toastr";
 
@@ -26,4 +28,57 @@ html, body{
 #app{
     height: 100%;
 
+}
+.questions{
+    display: flex;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    .question{
+        width: 70%;
+    }
+    .animated {
+        transition: all 400ms;
+        // position: absolute;
+        transform: translate(0, 0);
+    }
+    .slide-in {
+        opacity: 0;
+        transform: translate(0, 0);
+    }
+    .slide-in-active {
+        transition-delay: 150ms;
+    }
+    .slide-out {
+        opacity: 1;
+    }
+
+    .slide-out-active {
+        opacity: 0;
+        // transform: translate(-50%, -50%);
+    }
+    .variant{
+        margin-top: 10px;
+        height: 40px;
+        ;
+        padding: 4px;
+        position: inherit;
+        input{
+            margin: 10px;
+        }
+        label{
+            margin: 5px;
+            margin-left: 20px;
+        }
+        &:hover{
+            background-color: rgb(224, 224, 224)
+        }
+        
+    }
+    input[type="radio"]:checked{
+        .variant{
+            background-color: rgb(224, 224, 224) 
+        }
+    }
 }

@@ -279,7 +279,7 @@
                   toastr.options.progressBar = true;
                   toastr.options.hideMethod = 'slideUp';
               }).catch((error)=>{
-
+                  toastr.error(error.response.status)
               })  
             },
             showSettings: function (i) {

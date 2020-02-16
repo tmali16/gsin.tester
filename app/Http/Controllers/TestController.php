@@ -61,6 +61,12 @@ class TestController extends Controller
         
         return Test::where("id",  $id)->with(["Question.Answers"])->get()->toJson();;
     }
+    public function getAllTests()
+    {
+        $tests = Test::where("enable", 1)->get();
+
+        return $tests;
+    }
     public function getSettings(Request $request)
     {
         $id = $request->id;

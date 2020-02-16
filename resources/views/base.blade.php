@@ -20,6 +20,7 @@
         <div id="app" class="h-100">
             @yield('content')
         </div>
+        
         @yield('script')
     </body>
 </html>

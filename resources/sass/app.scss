@@ -82,3 +82,12 @@ html, body{
         }
     }
 }
+#Spinner{
+    position: absolute; 
+    z-index: 99999;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    bottom: -40%;
+    top: 50%;
+}

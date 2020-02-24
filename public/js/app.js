@@ -2494,29 +2494,87 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: [],
   data: function data() {
     return {
       resCode: 0,
-      tests: []
+      tests: [],
+      fname: "",
+      mname: "",
+      lname: "",
+      test_id: 0,
+      errors: [],
+      ret: []
     };
   },
   mounted: function mounted() {
+    $("#Spinner").hide();
     this.getTest();
   },
   methods: {
     getTest: function getTest() {
       var _this = this;
 
+      $("#Spinner").show();
       axios.get("/api/admin/test/all").then(function (response) {
         _this.tests = response.data;
-        console.log(_this.tests);
+        $("#Spinner").hide();
       })["catch"](function (error) {
         console.log(error);
       });
     },
-    save: function save() {}
+    save: function save() {
+      var _this2 = this;
+
+      $("#Spinner").hide();
+      axios({
+        method: "POST",
+        url: "/api/admin/test/add/user",
+        data: {
+          fname: this.fname,
+          mname: this.mname,
+          lname: this.lname,
+          test_id: this.test_id
+        }
+      }).then(function (response) {
+        if (response.data.status == "ok") {
+          _this2.ret = response.data;
+          toastr.info("Сообщение", response.data.message);
+        }
+
+        if (response.data.status == "error") {
+          _this2.errors = response.data;
+          toastr.error("Ошибка заполнения полей", "Ошибка");
+        }
+
+        $("#Spinner").hide();
+      })["catch"](function (error) {
+        console.log(error.response);
+      });
+    }
   }
 });
 
@@ -39471,49 +39529,215 @@ var render = function() {
       _c("div", { staticClass: "col-md-8" }, [
         _c("div", { staticClass: "card rounded-0 border-0 shadow" }, [
           _c("div", { staticClass: "card-body" }, [
-            _vm._m(0),
-            _vm._v(" "),
-            _vm._m(1),
-            _vm._v(" "),
-            _vm._m(2),
-            _vm._v(" "),
-            _c("div", { staticClass: "form-group" }, [
-              _c("label", { attrs: { for: "lastname" } }, [
-                _vm._v("Выберите тест")
-              ]),
-              _vm._v(" "),
-              _c(
-                "select",
-                { staticClass: "form-control", attrs: { id: "" } },
-                _vm._l(_vm.tests, function(item, i) {
-                  return _c(
-                    "option",
-                    { key: i, domProps: { value: item.id } },
-                    [_vm._v(_vm._s(item.name))]
-                  )
-                }),
-                0
-              )
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-footer" }, [
-              _c("div", { staticClass: "col" }, [
-                _c(
-                  "button",
-                  {
-                    staticClass:
-                      "btn btn-info text-white rounded-0 float-right",
-                    on: { click: _vm.save }
-                  },
-                  [
-                    _vm._v(
-                      "\n                                Добавить\n                            "
+            _vm.ret.status == "ok"
+              ? _c("div", { staticClass: "res w-100 h-100" }, [
+                  _c("span", { staticClass: "d-flex" }, [
+                    _c("div", { staticClass: "jumbotron w-100" }, [
+                      _c("h5", { staticClass: "display-4" }, [
+                        _vm._v("Ураа...!")
+                      ]),
+                      _vm._v(" "),
+                      _c("p", { staticClass: "lead" }, [
+                        _vm._v("Новый тестируемый добавлен успешно. ")
+                      ]),
+                      _vm._v(" "),
+                      _c("hr", { staticClass: "my-4" }),
+                      _vm._v(" "),
+                      _c("h3", { staticClass: "display-3" }, [
+                        _vm._v(_vm._s(_vm.ret.kod))
+                      ]),
+                      _vm._v(" "),
+                      _c("p", { staticClass: "lead" }, [
+                        _vm._v("Данный код преднозначен для прохождения теста")
+                      ])
+                    ])
+                  ])
+                ])
+              : _c("div", { staticClass: "addData" }, [
+                  _c("div", { staticClass: "form-group" }, [
+                    _c("label", { attrs: { for: "firstname" } }, [
+                      _vm._v("Фамилия")
+                    ]),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.fname,
+                          expression: "fname"
+                        }
+                      ],
+                      class:
+                        "form-control rounded-0 " +
+                        (_vm.errors.fname != undefined || _vm.errors.fname > 0
+                          ? "is-invalid"
+                          : ""),
+                      attrs: {
+                        type: "text",
+                        id: "firstname",
+                        placeholder: "Фамилия"
+                      },
+                      domProps: { value: _vm.fname },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.fname = $event.target.value
+                        }
+                      }
+                    }),
+                    _vm._v(" "),
+                    _vm.errors.fname != undefined && _vm.errors.fname.length > 0
+                      ? _c("div", { staticClass: "invalid-feedback" }, [
+                          _vm._v(
+                            "\n                                " +
+                              _vm._s(_vm.errors.fname) +
+                              "\n                            "
+                          )
+                        ])
+                      : _vm._e()
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "form-group" }, [
+                    _c("label", { attrs: { for: "name" } }, [_vm._v("Имя")]),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.mname,
+                          expression: "mname"
+                        }
+                      ],
+                      class:
+                        "form-control rounded-0 " +
+                        (_vm.errors.mname != undefined || _vm.errors.mname > 0
+                          ? "is-invalid"
+                          : ""),
+                      attrs: { type: "text", id: "name", placeholder: "Имя" },
+                      domProps: { value: _vm.mname },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.mname = $event.target.value
+                        }
+                      }
+                    }),
+                    _vm._v(" "),
+                    _vm.errors.mname != undefined && _vm.errors.mname.length > 0
+                      ? _c("div", { staticClass: "invalid-feedback" }, [
+                          _vm._v(
+                            "\n                                " +
+                              _vm._s(_vm.errors.mname) +
+                              "\n                            "
+                          )
+                        ])
+                      : _vm._e()
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "form-group" }, [
+                    _c("label", { attrs: { for: "lastname" } }, [
+                      _vm._v("Отчество")
+                    ]),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.lname,
+                          expression: "lname"
+                        }
+                      ],
+                      staticClass: "form-control rounded-0",
+                      attrs: {
+                        type: "text",
+                        id: "lastname",
+                        placeholder: "Отчество"
+                      },
+                      domProps: { value: _vm.lname },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.lname = $event.target.value
+                        }
+                      }
+                    })
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "form-group" }, [
+                    _c("label", { attrs: { for: "lastname" } }, [
+                      _vm._v("Выберите тест")
+                    ]),
+                    _vm._v(" "),
+                    _c(
+                      "select",
+                      {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.test_id,
+                            expression: "test_id"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: { id: "" },
+                        on: {
+                          change: function($event) {
+                            var $$selectedVal = Array.prototype.filter
+                              .call($event.target.options, function(o) {
+                                return o.selected
+                              })
+                              .map(function(o) {
+                                var val = "_value" in o ? o._value : o.value
+                                return val
+                              })
+                            _vm.test_id = $event.target.multiple
+                              ? $$selectedVal
+                              : $$selectedVal[0]
+                          }
+                        }
+                      },
+                      _vm._l(_vm.tests, function(item, i) {
+                        return _c(
+                          "option",
+                          { key: i, domProps: { value: item.id } },
+                          [_vm._v(_vm._s(item.name))]
+                        )
+                      }),
+                      0
                     )
-                  ]
-                )
-              ])
-            ])
-          ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "card-footer" }, [
+                    _c("div", { staticClass: "col" }, [
+                      _c(
+                        "button",
+                        {
+                          staticClass:
+                            "btn btn-info text-white rounded-0 float-right",
+                          on: { click: _vm.save }
+                        },
+                        [
+                          _vm._v(
+                            "\n                                    Добавить\n                                "
+                          )
+                        ]
+                      )
+                    ])
+                  ])
+                ])
+          ]),
+          _vm._v(" "),
+          _vm._m(0)
         ])
       ])
     ])
@@ -39524,40 +39748,15 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-group" }, [
-      _c("label", { attrs: { for: "firstname" } }, [_vm._v("Фамилия")]),
-      _vm._v(" "),
-      _c("input", {
-        staticClass: "form-control rounded-0",
-        attrs: { type: "text", id: "firstname", placeholder: "Фамилия" }
-      })
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-group" }, [
-      _c("label", { attrs: { for: "name" } }, [_vm._v("Имя")]),
-      _vm._v(" "),
-      _c("input", {
-        staticClass: "form-control rounded-0",
-        attrs: { type: "text", id: "name", placeholder: "Имя" }
-      })
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-group" }, [
-      _c("label", { attrs: { for: "lastname" } }, [_vm._v("Отчество")]),
-      _vm._v(" "),
-      _c("input", {
-        staticClass: "form-control rounded-0",
-        attrs: { type: "text", id: "lastname", placeholder: "Отчество" }
-      })
-    ])
+    return _c(
+      "div",
+      {
+        staticClass: "spinner-grow text-primary",
+        staticStyle: { display: "hidden" },
+        attrs: { role: "status", id: "Spinner" }
+      },
+      [_c("span", { staticClass: "sr-only" }, [_vm._v("Loading...")])]
+    )
   }
 ]
 render._withStripped = true

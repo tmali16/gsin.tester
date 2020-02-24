@@ -24,6 +24,8 @@ Route::get("admin/test/get/{id}", "TestController@tests");
 Route::get("admin/test/all", "TestController@getAllTests");
 Route::get("admin/test/settings/get/{id}", "TestController@getSettings");
 Route::post("admin/test/settings/save/{id}", "SettingsController@saveSettings");
+Route::post("admin/test/add/user", "TstingController@addUser");
+
 
 // user
 

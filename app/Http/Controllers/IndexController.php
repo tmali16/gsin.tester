@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Tsting;
+
 
 class IndexController extends Controller
 {
@@ -10,5 +12,22 @@ class IndexController extends Controller
     public function Index()
     {
        return view('index.index', []);
+    }
+
+    public function chckUser(Request $request)
+    {
+
+        if(Tsting::where('_id', $request->id)->count() != 0){
+            return redirect("/welcome/$request->id");
+        }else{
+            $ret = [
+                "message"=>"Данный тест не найден"
+            ];
+            return redirect("/")->withErrors($ret);
+        }
+    }
+    public function welcome(Request $request)
+    {
+        
     }
 }

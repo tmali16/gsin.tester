@@ -15,4 +15,8 @@ class Test extends Model
     {
         return $this->hasOne("App\Settings");
     }
+    public function user()
+    {
+        return $this->hasOne("App\User", "id", "user_id");
+    }
 }

@@ -21,13 +21,16 @@ class IndexController extends Controller
             return redirect("/welcome/$request->id");
         }else{
             $ret = [
-                "message"=>"Данный тест не найден"
+                "message"=>"Данный тестируемый не найден"
             ];
             return redirect("/")->withErrors($ret);
         }
     }
-    public function welcome(Request $request)
+    public function welcome(Request $request, $id)
     {
+        $testing  = Tsting::where("_id", $id)->with(["test.Settings", "test.user"])->first();
+        $fullname = $testing->fn . " " . $testing->mn . " " . $testing->ln;
         
+        return view("index.welcome", ["name"=>$fullname, "testing"=>$testing]);
     }
 }

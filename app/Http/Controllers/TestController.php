@@ -79,4 +79,15 @@ class TestController extends Controller
         $test = Test::where("id", $id)->with(["Question.Answers"])->first();
         return $test;
     }
+    public function start_test(Request $request, $id)
+    {
+        
+        return view("index.test", []);
+    }
+    public function store(Request $request)
+    {
+        
+
+        return;
+    }
 }

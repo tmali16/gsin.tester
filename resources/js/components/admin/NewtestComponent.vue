@@ -11,7 +11,7 @@
                             <span class="btn btn-link text-left col-8 p-0 mb-3" @click="selectTest(item.id)">
                                 {{item.name}}
                             </span>
-                            <button class="btn btn-sm rounded-0 btn-success col-3 p-0 mb-3" @click="showSettings(item.id)"><i class="fa fa-cog" aria-hidden="true"></i></button>
+                            <button class="btn btn-sm rounded-0 btn-success col-3 p-0 mb-3" @click="showSettings(item.id)"> <img src="/images/settings.png" alt="" style="width: 16px;"> </button>
                         </div>
                        </div>
                     </div>

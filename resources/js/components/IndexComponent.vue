@@ -8,12 +8,8 @@
                             <span class=" badge budge-success">{{active +" / "+ countQuest}}</span>
                         </div>
                         <div  class="questions">
-                            <transition-group  
-                                name="slide"
-                                mode="out-in"
-                                class="question">
+                            <div  class="question">
                                 <div class="question" v-for="(item, i) in test.question" v-show="active==(i+1)" :key="i">
-                                    
                                     <div class="header mt-2 m2-4">
                                         <span>{{item.question}}</span>
                                     </div>
@@ -21,13 +17,12 @@
                                     <div class="form-check variant" v-for="(answer, ind) in item.answers" :key="ind">
                                         <input class="form-check-input" type="radio" :name="'exampleRadios'+i" :id="'exampleRadios'+answer.id+i" value="1" >
                                         <label class="form-check-label col" :for="'exampleRadios'+answer.id+i">
-                                        {{answer.answer}}
+                                            {{answer.answer}}
                                         </label>
                                     </div>
-                                    
                                 </div>
-                            </transition-group>
-                        </div >
+                            </div>
+                        </div>
                     </div>
                     <div class="card-footer text-center">
                         <button class="btn w-25 pl-3 pr-3 btn-sm btn-secondary rounded-0" @click="moveQuest(-1)">&larr; вернуться</button>
@@ -40,8 +35,7 @@
     </div>
 </template>
 
-<script>
-    
+<script>    
     export default {
         data() {
             return {

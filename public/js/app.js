@@ -1978,11 +1978,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -38513,81 +38508,71 @@ var render = function() {
               ]
             ),
             _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "questions" },
-              [
-                _c(
-                  "transition-group",
-                  {
-                    staticClass: "question",
-                    attrs: { name: "slide", mode: "out-in" }
-                  },
-                  _vm._l(_vm.test.question, function(item, i) {
-                    return _c(
-                      "div",
-                      {
-                        directives: [
-                          {
-                            name: "show",
-                            rawName: "v-show",
-                            value: _vm.active == i + 1,
-                            expression: "active==(i+1)"
-                          }
-                        ],
-                        key: i,
-                        staticClass: "question"
-                      },
-                      [
-                        _c("div", { staticClass: "header mt-2 m2-4" }, [
-                          _c("span", [_vm._v(_vm._s(item.question))])
-                        ]),
-                        _vm._v(" "),
-                        _c("hr", { staticClass: "m-1" }),
-                        _vm._v(" "),
-                        _vm._l(item.answers, function(answer, ind) {
-                          return _c(
-                            "div",
-                            { key: ind, staticClass: "form-check variant" },
-                            [
-                              _c("input", {
-                                staticClass: "form-check-input",
-                                attrs: {
-                                  type: "radio",
-                                  name: "exampleRadios" + i,
-                                  id: "exampleRadios" + answer.id + i,
-                                  value: "1"
-                                }
-                              }),
-                              _vm._v(" "),
-                              _c(
-                                "label",
-                                {
-                                  staticClass: "form-check-label col",
-                                  attrs: {
-                                    for: "exampleRadios" + answer.id + i
-                                  }
-                                },
-                                [
-                                  _vm._v(
-                                    "\n                                    " +
-                                      _vm._s(answer.answer) +
-                                      "\n                                    "
-                                  )
-                                ]
-                              )
-                            ]
-                          )
-                        })
+            _c("div", { staticClass: "questions" }, [
+              _c(
+                "div",
+                { staticClass: "question" },
+                _vm._l(_vm.test.question, function(item, i) {
+                  return _c(
+                    "div",
+                    {
+                      directives: [
+                        {
+                          name: "show",
+                          rawName: "v-show",
+                          value: _vm.active == i + 1,
+                          expression: "active==(i+1)"
+                        }
                       ],
-                      2
-                    )
-                  }),
-                  0
-                )
-              ],
-              1
-            )
+                      key: i,
+                      staticClass: "question"
+                    },
+                    [
+                      _c("div", { staticClass: "header mt-2 m2-4" }, [
+                        _c("span", [_vm._v(_vm._s(item.question))])
+                      ]),
+                      _vm._v(" "),
+                      _c("hr", { staticClass: "m-1" }),
+                      _vm._v(" "),
+                      _vm._l(item.answers, function(answer, ind) {
+                        return _c(
+                          "div",
+                          { key: ind, staticClass: "form-check variant" },
+                          [
+                            _c("input", {
+                              staticClass: "form-check-input",
+                              attrs: {
+                                type: "radio",
+                                name: "exampleRadios" + i,
+                                id: "exampleRadios" + answer.id + i,
+                                value: "1"
+                              }
+                            }),
+                            _vm._v(" "),
+                            _c(
+                              "label",
+                              {
+                                staticClass: "form-check-label col",
+                                attrs: { for: "exampleRadios" + answer.id + i }
+                              },
+                              [
+                                _vm._v(
+                                  "\n                                        " +
+                                    _vm._s(answer.answer) +
+                                    "\n                                    "
+                                )
+                              ]
+                            )
+                          ]
+                        )
+                      })
+                    ],
+                    2
+                  )
+                }),
+                0
+              )
+            ])
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "card-footer text-center" }, [
@@ -38754,9 +38739,9 @@ var render = function() {
                         }
                       },
                       [
-                        _c("i", {
-                          staticClass: "fa fa-cog",
-                          attrs: { "aria-hidden": "true" }
+                        _c("img", {
+                          staticStyle: { width: "16px" },
+                          attrs: { src: "/images/settings.png", alt: "" }
                         })
                       ]
                     )

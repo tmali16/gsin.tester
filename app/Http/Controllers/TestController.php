@@ -7,6 +7,7 @@ use App\Question;
 use App\Test;
 use App\Answer;
 use App\Typequestion;
+use App\Settings;
 
 class TestController extends Controller
 {
@@ -27,7 +28,15 @@ class TestController extends Controller
             $test->name = $name;
             $test->description = $descript;
             $test->user_id =\Auth::id();
-            $test->save();
+            if($test->save()){
+                $settings = new Settings();
+                $settings->quest_random = 1;
+                $settings->quest_count = 30;
+                $settings->answer_random = 1;
+                $settings->duration = 30;
+                $settings->test_id = $test->id;
+                $settings->save();
+            }
         }
         return redirect()->to("admin/tests");
     }

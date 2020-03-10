@@ -52,16 +52,16 @@ Administrator
         </div>
         <div class="modal-body">
             <form action="{{route("new_test")}}" method="post">
-                @csrf								
+                @csrf
                 <div class="form-group col">
                     <label for="ques_test">Название теста</label>
                     <input type="text" id="test_name" class="form-control rounded-0" name="name_test" required/>
                 </div>
                 <div class="form-group col">
                     <label for="ques_test">Описание</label>
-                    <textarea id="ques_test" class="form-control rounded-0" name="test_description" rows="5">
+                    <textarea id="ques_test" class="form-control rounded-0" name="test_description" rows="2">
                     </textarea>
-                </div>
+                </div>               
                 <a class="btn btn-secondary btn-sm" data-dismiss="modal">Close</a>
                 <button href="" class="btn btn-sm btn-success">
                     Создать

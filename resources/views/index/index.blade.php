@@ -8,7 +8,7 @@ Index page
     <div class="flex-center position-ref full-height" id="user_index_auth">
         <div class="content " > 
             <div class="text-white bg-4">
-                <h4 class="display-4  title shadow">
+                <h4 class="display-4  title shadow text-success shadow-1">
                     ГСИН при ПКР
                 </h4>
             </div>

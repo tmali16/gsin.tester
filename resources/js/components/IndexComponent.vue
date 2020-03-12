@@ -10,12 +10,12 @@
                         <div  class="questions">
                             <div  class="question">
                                 <div class="question" v-for="(item, i) in test.question" v-show="active==(i+1)" :key="i">
-                                    <div class="header mt-2 m2-4">
+                                    <div class="header mt-2">
                                         <span>{{item.question}}</span>
                                     </div>
                                     <hr class="m-1">
                                     <div class="form-check variant" v-for="(answer, ind) in item.answers" :key="ind">
-                                        <input class="form-check-input" type="radio" :name="'exampleRadios'+i" :id="'exampleRadios'+answer.id+i" value="1" >
+                                        <input class="form-check-input" type="radio" :name="'AnswerRadios'+item.question.id" :id="'exampleRadios'+answer.id+i" :value="answer.id" >
                                         <label class="form-check-label col" :for="'exampleRadios'+answer.id+i">
                                             {{answer.answer}}
                                         </label>
@@ -26,7 +26,7 @@
                     </div>
                     <div class="card-footer text-center">
                         <button class="btn w-25 pl-3 pr-3 btn-sm btn-secondary rounded-0" @click="moveQuest(-1)">&larr; вернуться</button>
-                        <button class="btn w-25 btn-success rounded-0">Prinyat</button>
+                        <button class="btn w-25 btn-success rounded-0" @click="sendAnswer(currQuest.id, currQuest.test_id)">Prinyat</button>
                         <button class="btn w-25 btn-sm btn-secondary rounded-0" @click="moveQuest(1)">Пропустить &rarr;</button>
                     </div>
                 </div>
@@ -37,49 +37,63 @@
 
 <script>    
     export default {
+        props:[
+            'user_id',
+        ],
         data() {
             return {
                 test: [],
                 countQuest: 0,
                 index: 0,
-                next: 0,
-                prev: 0,
                 active: 1,
-                slides: 0,
+                currQuest: [],
+                answerID: null,
             }
         },
-        mounted() {            
+        mounted() {
             this.getQuestion()
-            // this.reInit()
+            
         },
         methods: {
             getQuestion: function(){
-                axios.get("/api/test/get/1").then((response)=>{
+                axios.get("/api/test/get/"+this.user_id).then((response)=>{
                     this.test = response.data
                     this.countQuest = this.test.question.length
+                    this.currentTest(this.active)
+                    console.log(this.currTest)
                 }).catch((error)=>{
                     toastr.error(error.response)
                     console.log(error)
                 })
             },
-            sendAnswer(question_id, answer_id){
-                axios({
-                    method: "POST",
-                    url: "/api/test/answer/"+test_id,
-                    data:{
-                        question_id: question_id,
-                        answer_id: answer_id
-                    }
-                }).then((response)=>{
-                    toastr.error(response.error.data.message);
-                })
+            sendAnswer(question_id, test_id){
+                this.questAnswer()
+                // axios({
+                //     method: "POST",
+                //     url: "/api/test/answer/"+test_id,
+                //     data:{
+                //         question_id: question_id,
+                //         answer_id: this.answerID
+                //     }
+                // }).then((response)=>{
+                //     toastr.error(response.error.data.message);
+                // })
             },
             moveQuest: function (a) {
                 let newAct
                 const newInd = this.active + a
                 if(newInd > this.test.question.length) newAct=1
                 if(newInd === 0)newAct = this.test.question.length
-                this.active = newAct || newInd                
+                this.active = newAct || newInd
+            },
+            currentTest: function (id) {
+                this.currQuest = this.test.question[id-1]
+            },
+            questAnswer: function () {
+                this.answerID = $("input[name=AnswerRadios"+(this.currQuest.id)+"]:checked").val()
+                this.test.question.splice((this.active-1), 1)
+                this.countQuest = this.test.question.length
+                
             }
         },
     }

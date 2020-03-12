@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Question;
 use App\Test;
 use App\Answer;
 use App\Typequestion;
 use App\Settings;
+use App\Tsting;
 
 class TestController extends Controller
 {
@@ -85,17 +87,37 @@ class TestController extends Controller
     public function getTestforUser(Request $request)
     {
         $id = $request->id;
-        $test = Test::where("id", $id)->with(["Question.Answers"])->first();
-        return $test;
+        $user = Tsting::where("_id", $id)->first();
+        $settings = $user->test->Settings;
+        $test = Test::where("id", $user->test_id)->first();        
+        if($settings->quest_random == 1){
+            $quest = Question::where("test_id", $test->id)->orderBy(DB::raw('RAND()'))->take($settings->quest_count)->get();
+        }else{
+            $quest = Question::where("test_id", "=", $test->id)->get();
+        }
+        $ret = [
+            "id"=>$test->id,
+            "name"=>$test->name,
+            "description"=>$test->name,
+            "enable"=>$test->name,
+            "user_id"=>$test->name,
+            'question'=> collect($quest)->shuffle()
+            
+        ];
+
+        return $ret;
     }
     public function start_test(Request $request, $id)
     {
         
-        return view("index.test", []);
+
+        return view("index.test", ["user_id"=>$id]);
     }
-    public function store(Request $request)
+    public function store(Request $request, $id)
     {
-        
+        $quest_id = $request->quest_id;
+        $answer_id = $request->answer_id;
+        $test_id = $request->test_id;
 
         return;
     }

@@ -1979,43 +1979,47 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['user_id'],
   data: function data() {
     return {
       test: [],
       countQuest: 0,
       index: 0,
-      next: 0,
-      prev: 0,
       active: 1,
-      slides: 0
+      currQuest: [],
+      answerID: null
     };
   },
   mounted: function mounted() {
-    this.getQuestion(); // this.reInit()
+    this.getQuestion();
   },
   methods: {
     getQuestion: function getQuestion() {
       var _this = this;
 
-      axios.get("/api/test/get/1").then(function (response) {
+      axios.get("/api/test/get/" + this.user_id).then(function (response) {
         _this.test = response.data;
         _this.countQuest = _this.test.question.length;
+
+        _this.currentTest(_this.active);
+
+        console.log(_this.currTest);
       })["catch"](function (error) {
         toastr.error(error.response);
         console.log(error);
       });
     },
-    sendAnswer: function sendAnswer(question_id, answer_id) {
-      axios({
-        method: "POST",
-        url: "/api/test/answer/" + test_id,
-        data: {
-          question_id: question_id,
-          answer_id: answer_id
-        }
-      }).then(function (response) {
-        toastr.error(response.error.data.message);
-      });
+    sendAnswer: function sendAnswer(question_id, test_id) {
+      this.questAnswer(); // axios({
+      //     method: "POST",
+      //     url: "/api/test/answer/"+test_id,
+      //     data:{
+      //         question_id: question_id,
+      //         answer_id: this.answerID
+      //     }
+      // }).then((response)=>{
+      //     toastr.error(response.error.data.message);
+      // })
     },
     moveQuest: function moveQuest(a) {
       var newAct;
@@ -2023,6 +2027,14 @@ __webpack_require__.r(__webpack_exports__);
       if (newInd > this.test.question.length) newAct = 1;
       if (newInd === 0) newAct = this.test.question.length;
       this.active = newAct || newInd;
+    },
+    currentTest: function currentTest(id) {
+      this.currQuest = this.test.question[id - 1];
+    },
+    questAnswer: function questAnswer() {
+      this.answerID = $("input[name=AnswerRadios" + this.currQuest.id + "]:checked").val();
+      this.test.question.splice(this.active - 1, 1);
+      this.countQuest = this.test.question.length;
     }
   }
 });
@@ -38528,7 +38540,7 @@ var render = function() {
                       staticClass: "question"
                     },
                     [
-                      _c("div", { staticClass: "header mt-2 m2-4" }, [
+                      _c("div", { staticClass: "header mt-2" }, [
                         _c("span", [_vm._v(_vm._s(item.question))])
                       ]),
                       _vm._v(" "),
@@ -38543,10 +38555,10 @@ var render = function() {
                               staticClass: "form-check-input",
                               attrs: {
                                 type: "radio",
-                                name: "exampleRadios" + i,
-                                id: "exampleRadios" + answer.id + i,
-                                value: "1"
-                              }
+                                name: "AnswerRadios" + item.question.id,
+                                id: "exampleRadios" + answer.id + i
+                              },
+                              domProps: { value: answer.id }
                             }),
                             _vm._v(" "),
                             _c(
@@ -38590,9 +38602,21 @@ var render = function() {
               [_vm._v("← вернуться")]
             ),
             _vm._v(" "),
-            _c("button", { staticClass: "btn w-25 btn-success rounded-0" }, [
-              _vm._v("Prinyat")
-            ]),
+            _c(
+              "button",
+              {
+                staticClass: "btn w-25 btn-success rounded-0",
+                on: {
+                  click: function($event) {
+                    return _vm.sendAnswer(
+                      _vm.currQuest.id,
+                      _vm.currQuest.test_id
+                    )
+                  }
+                }
+              },
+              [_vm._v("Prinyat")]
+            ),
             _vm._v(" "),
             _c(
               "button",

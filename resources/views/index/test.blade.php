@@ -5,5 +5,5 @@ Index page
 @endsection
 
 @section("content")
-    <index-component></index-component>
+<index-component user_id="{{$user_id}}"></index-component>
 @endsection

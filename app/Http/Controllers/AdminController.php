@@ -24,4 +24,10 @@ class AdminController extends Controller
         
         return view("admin.testing");
     }
+
+
+    public function CreateTest(Request $request)
+    {
+        return view("admin.new_test");
+    }
 }

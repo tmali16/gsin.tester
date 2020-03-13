@@ -15,12 +15,15 @@ Route::get('/', "IndexController@Index");
 Route::get('/chckTesting', "IndexController@chckUser")->name("chckUser");
 
 Route::get('/welcome/{id}', 'IndexController@welcome')->name('welcome_page');
-
 Route::get("/start/{id}", "TestController@start_test");
+
+
 Route::get('admin/', "AdminController@Index")->name('admin_index');
+Route::get('admin/create/test', "AdminController@CreateTest")->name('create_test');
 Route::post('admin/new', "TestController@Newtest")->name('new_test');
 Route::get('admin/tests', "TestController@New_question")->name('new_question');
 Route::get('admin/testing', "AdminController@addTesting")->name('new_testing');
+
 
 Route::get("admin/test/get/all", "TestController@getAllTests");
 

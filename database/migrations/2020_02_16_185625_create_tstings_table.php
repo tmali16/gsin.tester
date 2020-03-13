@@ -19,7 +19,8 @@ class CreateTstingsTable extends Migration
             $table->string("mn");
             $table->string("ln")->nullable()->default(null);
             $table->integer("_id");
-            $table->longText("answers")->default(null);
+            $table->json("answers")->default(null);
+            $table->boolean("complate")->default(false);
             $table->integer("point")->default(null);
             $table->bigInteger("test_id")->unsigned()->index();
             $table->timestamps();

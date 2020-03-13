@@ -26,7 +26,7 @@ Vue.component('index-component', require('./components/IndexComponent.vue').defa
 
 //admin
 Vue.component('dashboard-component', require('./components/admin/DashboardComponent.vue').default);
-Vue.component('create-test-component', require('./components/admin/NewtestComponent.vue').default);
+Vue.component('create-question-component', require('./components/admin/CreateQuestion.vue').default);
 Vue.component('create-testing-component', require('./components/admin/TestingComponent.vue').default);
 
 /**

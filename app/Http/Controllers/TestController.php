@@ -18,17 +18,30 @@ class TestController extends Controller
 
     public function Newtest(Request $request)
     {
-        $name = $request->input("name_test");
-        $descript = $request->input("test_description");
+        $name_kg = $request->input("name_kg");
+        $name_ru = $request->input("name_ru");
+        $descript_kg = $request->input("description_kg");
+        $descript_ru = $request->input("description_ru");
+        $quest_count = $request->input("quest_count");
+        $quest_count_num = $request->input("quest_count_num");
+        
+        $quest_random = $request->input("quest_random");
+        $answer_random = $request->input("answer_random");
+        $duration = $request->input("duration");
+        $duration_min = $request->input("duration_min");
 
         $rules = [
-            "name_test" => "required|min:2",
-            "description" => "nullable|min:2",
+            "name_kg" => "required|min:2",
+            "name_ru" => "required|min:2",
+            "description_kg" => "nullable|min:2",
+            "description_ru" => "nullable|min:2",
         ];
         $test = new Test();
         if($this->validate($request, $rules, [])){            
-            $test->name = $name;
-            $test->description = $descript;
+            $test->name_kg = $name_kg;
+            $test->name_ru = $name_ru;
+            $test->description_kg = $descript_kg;
+            $test->description_ru = $descript_ru;
             $test->user_id =\Auth::id();
             if($test->save()){
                 $settings = new Settings();
@@ -91,7 +104,7 @@ class TestController extends Controller
         $settings = $user->test->Settings;
         $test = Test::where("id", $user->test_id)->first();        
         if($settings->quest_random == 1){
-            $quest = Question::where("test_id", $test->id)->orderBy(DB::raw('RAND()'))->take($settings->quest_count)->get();
+            $quest = Question::where("test_id", $test->id)->orderBy(DB::raw('RAND()'))->take($settings->quest_count)->with('Answers')->get();
         }else{
             $quest = Question::where("test_id", "=", $test->id)->get();
         }
@@ -101,7 +114,7 @@ class TestController extends Controller
             "description"=>$test->name,
             "enable"=>$test->name,
             "user_id"=>$test->name,
-            'question'=> collect($quest)->shuffle()
+            'question'=> $quest
             
         ];
 

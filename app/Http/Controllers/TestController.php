@@ -18,17 +18,18 @@ class TestController extends Controller
 
     public function Newtest(Request $request)
     {
+        //dd($request->all());
         $name_kg = $request->input("name_kg");
         $name_ru = $request->input("name_ru");
         $descript_kg = $request->input("description_kg");
         $descript_ru = $request->input("description_ru");
         $quest_count = $request->input("quest_count");
-        $quest_count_num = $request->input("quest_count_num");
+        $quest_count_num = ($quest_count == 1 ? $request->input("quest_count_num") : null);
         
         $quest_random = $request->input("quest_random");
         $answer_random = $request->input("answer_random");
         $duration = $request->input("duration");
-        $duration_min = $request->input("duration_min");
+        $duration_min = ($duration == 1 ? $request->input("duration_min") : 0);
 
         $rules = [
             "name_kg" => "required|min:2",
@@ -36,6 +37,7 @@ class TestController extends Controller
             "description_kg" => "nullable|min:2",
             "description_ru" => "nullable|min:2",
         ];
+
         $test = new Test();
         if($this->validate($request, $rules, [])){            
             $test->name_kg = $name_kg;
@@ -45,19 +47,64 @@ class TestController extends Controller
             $test->user_id =\Auth::id();
             if($test->save()){
                 $settings = new Settings();
-                $settings->quest_random = 1;
-                $settings->quest_count = 30;
-                $settings->answer_random = 1;
-                $settings->duration = 30;
+                $settings->quest_random = $quest_random;
+                $settings->quest_count = $quest_count_num;
+                $settings->answer_random = $answer_random;
+                $settings->duration = $duration;
                 $settings->test_id = $test->id;
                 $settings->save();
             }
         }
         return redirect()->to("admin/tests");
     }
-    public function New_question()
+    public function edit(Request $request, $id)
     {
-        return view("admin.new_test");
+        $test = Test::where("id", $id)->with('Settings')->first();
+        return view("admin.edit_test", ['test'=>$test]);
+    }
+    public function update(Request $request, $id)
+    {
+        
+        $name_kg = $request->input("name_kg");
+        $name_ru = $request->input("name_ru");
+        $descript_kg = $request->input("description_kg");
+        $descript_ru = $request->input("description_ru");
+        $quest_count = $request->input("quest_count");
+        $quest_count_num = ($quest_count == 1 ? $request->input("quest_count_num") : null);
+        
+        $quest_random = $request->input("quest_random");
+        $answer_random = $request->input("answer_random");
+        $duration = $request->input("duration");
+        $duration_min = ($duration == 1 ? $request->input("duration_min") : 0);
+
+        $rules = [
+            "name_kg" => "required|min:2",
+            "name_ru" => "required|min:2",
+            "description_kg" => "nullable|min:2",
+            "description_ru" => "nullable|min:2",
+        ];
+
+        $test = Test::where('id', $id)->first();
+        $settings = Settings::where("test_id", $test->id)->first();
+        if($this->validate($request, $rules, [])){            
+            $test->name_kg = $name_kg;
+            $test->name_ru = $name_ru;
+            $test->description_kg = $descript_kg;
+            $test->description_ru = $descript_ru;
+            //$test->user_id =\Auth::id();
+            $test->update();                
+            $settings->quest_random = $quest_random;
+            $settings->quest_count = $quest_count_num;
+            $settings->answer_random = $answer_random;
+            $settings->duration = $duration;
+            $settings->test_id = $test->id;
+            $settings->update();
+        }
+        return redirect()->to("/admin/test/list");        
+    }
+    public function TestList()
+    {
+        return view("admin.list_test");
     }
 
     public function test(Request $request)  
@@ -79,11 +126,12 @@ class TestController extends Controller
         ];
         return json_encode($ret, JSON_PRETTY_PRINT);
     }
-    public function tests(Request $request)
+    public function tests(Request $request, $id)
     {
-        $id = $request->id;
-        
-        return Test::where("id",  $id)->with(["Question.Answers"])->get()->toJson();;
+        $tsting = Tsting::where("_id", $id)->first();
+        $test = Test::where("id",  $tsting->id)->with(["Question.Answers"])->first();
+        $setting = Settings::where('test_id', $test->id)->first();
+        return ["settings"=>$setting, "test"=>$test];
     }
     public function getAllTests()
     {
@@ -110,10 +158,10 @@ class TestController extends Controller
         }
         $ret = [
             "id"=>$test->id,
-            "name"=>$test->name,
-            "description"=>$test->name,
-            "enable"=>$test->name,
-            "user_id"=>$test->name,
+            "name_ru"=>$test->name_ru,
+            "description"=>$test->descript_ru,
+            "enable"=>$test->enable,
+            "user_id"=>$test->_id,
             'question'=> $quest
             
         ];
@@ -123,7 +171,6 @@ class TestController extends Controller
     public function start_test(Request $request, $id)
     {
         
-
         return view("index.test", ["user_id"=>$id]);
     }
     public function store(Request $request, $id)

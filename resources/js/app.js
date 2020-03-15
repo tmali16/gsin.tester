@@ -26,8 +26,10 @@ Vue.component('index-component', require('./components/IndexComponent.vue').defa
 
 //admin
 Vue.component('dashboard-component', require('./components/admin/DashboardComponent.vue').default);
-Vue.component('create-question-component', require('./components/admin/CreateQuestion.vue').default);
+
 Vue.component('create-testing-component', require('./components/admin/TestingComponent.vue').default);
+Vue.component('list-tests-component', require('./components/admin/ListQuestionTest.vue').default);
+Vue.component('create-question', require('./components/admin/CreateQuestion.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

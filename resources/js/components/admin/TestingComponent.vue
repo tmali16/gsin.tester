@@ -37,7 +37,7 @@
                             <div class="form-group">
                                 <label for="lastname">Выберите тест</label>
                                 <select id="" class="form-control" v-model="test_id">                                
-                                    <option v-for="(item, i) in tests" :key="i" :value="item.id">{{item.name}}</option>                                
+                                    <option v-for="(item, i) in tests" :key="i" :value="item.id">{{item.name_ru}}</option>                                
                                 </select>
                             </div>
                             <div class="card-footer">
@@ -61,7 +61,9 @@
 </template>
 
 <script>
+    
     export default {
+
         props:[
             
         ],

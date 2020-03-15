@@ -21,9 +21,14 @@ Route::get("/start/{id}", "TestController@start_test");
 Route::get('admin/', "AdminController@Index")->name('admin_index');
 Route::get('admin/create/test', "AdminController@CreateTest")->name('create_test');
 Route::post('admin/new', "TestController@Newtest")->name('new_test');
-Route::get('admin/tests', "TestController@New_question")->name('new_question');
+
+Route::get('admin/test/edit/{id}', "TestController@edit")->name('test_edit');
+Route::post('admin/test/update/{id}', "TestController@update")->name('test_update');
+Route::get('admin/test/list', "TestController@TestList")->name('test_list');
+
 Route::get('admin/testing', "AdminController@addTesting")->name('new_testing');
 
 
 Route::get("admin/test/get/all", "TestController@getAllTests");
 
+Route::get("admin/test/set", "QuestionController@addAnswer");

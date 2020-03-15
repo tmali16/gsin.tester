@@ -30,4 +30,4 @@ Route::post("admin/test/add/user", "TstingController@addUser");
 // user
 
 Route::get("/test/get/{id}", "TestController@getTestforUser");
-Route::post("/test/answer/{id}", "TestController@putAnswerUser");
+Route::post("/test/answer/{id}", "QuestionController@store");

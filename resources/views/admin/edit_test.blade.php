@@ -12,7 +12,7 @@ Admin - new test
         <div class="col-md-9">
             <div class="card rounded-0 mt-5">
                 <div class="card-header">
-                    <h5 class="display-5">Новый тест</h5>
+                    <h5 class="display-5">Изменение {{$test->name_ru}} </h5>
                 </div>
             </div>
         </div>
@@ -29,7 +29,7 @@ Admin - new test
                             </a>
                         </div>
                       </nav>
-                      <form action="{{route("new_test")}}" method="post">
+                      <form action="{{route("test_update", $test->id)}}" method="post">
                       <div class="tab-content" id="nav-tabContent">
                         <div class="col-md-12">
                             @if ($errors->any())
@@ -53,10 +53,10 @@ Admin - new test
                                             <label for="name_ru">Название теста</label>
                                         </div>
                                         <div class=" col-sm-6">
-                                            <input type="text" id="name_kg" class="form-control rounded-0" name="name_kg" placeholder="Тесттин аталышы" required value="{{old("name_kg")}}"/>
+                                            <input type="text" id="name_kg" class="form-control rounded-0" name="name_kg" placeholder="Тесттин аталышы" required value="{{$test->name_kg}}"/>
                                         </div>
                                         <div class="col-sm-6">
-                                            <input type="text" id="name_ru" class="form-control rounded-0" name="name_ru" placeholder="Название теста" required value="{{old("name_ru")}}"/>
+                                            <input type="text" id="name_ru" class="form-control rounded-0" name="name_ru" placeholder="Название теста" required value="{{$test->name_ru}}"/>
                                         </div>
                                     </div>
                                 </div>
@@ -69,11 +69,11 @@ Admin - new test
                                             <label for="ques_test">Описание</label>
                                         </div>
                                         <div class="col-sm-6">
-                                            <textarea id="ques_test" class="form-control rounded-0" name="description_kg" rows="2" value="{{old("description_kg")}}">
+                                            <textarea id="ques_test" class="form-control rounded-0" name="description_kg" rows="2"  value="{{$test->description_kg}}">
                                             </textarea>
                                         </div>
                                         <div class="col-sm-6">
-                                            <textarea id="ques_test" class="form-control rounded-0" name="description_ru" rows="2" value="{{old("description_ru")}}">
+                                            <textarea id="ques_test" class="form-control rounded-0" name="description_ru" rows="2" value="{{$test->description_ru}}">
                                             </textarea>
                                         </div>
                                     </div>
@@ -85,25 +85,25 @@ Admin - new test
                                     <div class="form-group col-md-12 ">
                                         <label for="" class="col text-info border_bottom"><b>Количество задаваемых вопросв</b></label>
                                         <div class="form-check form-check-inline col">
-                                            <input class="form-check-input" type="radio" name="quest_count" id="testCount1" value="0" checked="checked" onchange="Enable('quest_count', 'quest_count_num')">
+                                            <input class="form-check-input" type="radio" name="quest_count" id="testCount1" value="0" @if($test->settings->quest_random == 0) checked="checked" @endif onchange="Enable('quest_count', 'quest_count_num')">
                                             <label class="form-check-label" for="testCount1">Все вопросы</label>
                                         </div>
                                         <div class="form-check form-check-inline col">
-                                            <input class="form-check-input" type="radio" name="quest_count" id="testCount2" value="1" onchange="Enable('quest_count', 'quest_count_num')">
+                                            <input class="form-check-input" type="radio" name="quest_count" id="testCount2" value="1" onchange="Enable('quest_count', 'quest_count_num')" @if($test->settings->quest_random == 1) checked="checked" @endif>
                                             <label class="form-check-label" for="testCount2">
                                                 Случайные
-                                                <input type="number" class="form-controll form-controll-sm rounded-0" name="quest_count_num" style="width: 50px;"  disabled>
+                                                <input type="number" class="form-controll form-controll-sm rounded-0" name="quest_count_num" style="width: 50px;"   @if($test->settings->quest_random == 1) value="{{$test->settings->quest_count}}" @else disabled  @endif>
                                             </label>
                                         </div>
                                     </div>
                                     <div class="form-group col-sm-5 ">
                                         <label for="" class="col text-info"><b>Задавать вопросы</b></label>
                                         <div class="form-check form-check-inline col">
-                                            <input class="form-check-input" type="radio" name="quest_random" id="quest_random1" value="1" checked="checked">
+                                            <input class="form-check-input" type="radio" name="quest_random" id="quest_random1" value="1"  @if($test->settings->quest_random == 1) checked="checked" @endif >
                                             <label class="form-check-label" for="quest_random1">В случайном порядке</label>
                                         </div>
                                         <div class="form-check form-check-inline col">
-                                            <input class="form-check-input" type="radio" name="quest_random" id="quest_random2" value="0" >
+                                            <input class="form-check-input" type="radio" name="quest_random" id="quest_random2" value="0" @if($test->settings->quest_random == 0) checked="checked" @endif >
                                             <label class="form-check-label" for="quest_random2">
                                                 По порядку
                                             </label>
@@ -112,11 +112,11 @@ Admin - new test
                                     <div class="form-group col-sm-5 ">
                                         <label for="" class="col text-info"><strong>Предлогать ответы<strong></label>
                                         <div class="form-check form-check-inline col">
-                                            <input class="form-check-input" type="radio" name="answer_random" id="answer_random1" value="1" checked="checked">
+                                            <input class="form-check-input" type="radio" name="answer_random" id="answer_random1" value="1" @if($test->settings->answer_random == 1) checked="checked" @endif >
                                             <label class="form-check-label" for="answer_random1">В случайном порядке</label>
                                         </div>
                                         <div class="form-check form-check-inline col">
-                                            <input class="form-check-input" type="radio" name="answer_random" id="answer_random2" value="0">
+                                            <input class="form-check-input" type="radio" name="answer_random" id="answer_random2" value="0" @if($test->settings->answer_random == 0) checked="checked" @endif >
                                             <label class="form-check-label" for="answer_random2">
                                                 По порядку
                                             </label>
@@ -125,14 +125,14 @@ Admin - new test
                                     <div class="form-group col-md-12 ">
                                         <label for="" class="col text-info"><b>Время</b></label>
                                         <div class="form-check form-check-inline col">
-                                            <input class="form-check-input" type="radio" name="duration" id="test_duration1" value="0" onchange="Enable('duration', 'duration_min')" >
+                                            <input class="form-check-input" type="radio" name="duration" id="test_duration1" value="0" onchange="Enable('duration', 'duration_min')" @if($test->settings->duration == 0) checked="checked" @endif >
                                             <label class="form-check-label" for="test_duration1">Не ограничивать</label>
                                         </div>
                                         <div class="form-check form-check-inline col">
-                                            <input class="form-check-input" type="radio" name="duration" id="test_duration2" value="1" checked="checked" onchange="Enable('duration', 'duration_min')">
+                                            <input class="form-check-input" type="radio" name="duration" id="test_duration2" value="1" checked="checked" onchange="Enable('duration', 'duration_min')" @if($test->settings->duration > 0) checked="checked" @endif>
                                             <label class="form-check-label" for="test_duration2">
                                                 Ограничить время на выполнение теста
-                                                <input type="number" class="form-controll form-controll-sm rounded-0" name="duration_min" style="width: 50px;" value="30"  >
+                                                <input type="number" class="form-controll form-controll-sm rounded-0" name="duration_min" style="width: 50px;" value="30" @if($test->settings->duration > 0) value="{{$test->settings->duration}}" @else disabled  @endif >
                                                 минутами
                                             </label>
                                         </div>

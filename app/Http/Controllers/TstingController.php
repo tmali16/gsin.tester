@@ -49,7 +49,7 @@ class TstingController extends Controller
             $test_user->ln = $ln;
             $test_user->test_id = $test_id;
             $test_user->_id = $ret_id;
-            $test_user->answers = "";
+            $test_user->answers = json_encode(array());
             $test_user->point = 0;
             if($test_user->save()){
                 $ret = [

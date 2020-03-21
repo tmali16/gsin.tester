@@ -8,4 +8,9 @@ class Answer extends Model
 {
     //
     public $timestamps = false;
+
+    public function question()
+    {
+        return $this->hasOne("App\Question", "id", "answer_id");
+    }
 }

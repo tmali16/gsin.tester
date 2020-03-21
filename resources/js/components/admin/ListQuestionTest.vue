@@ -14,6 +14,7 @@
                             <a class="btn btn-sm rounded-0 btn-success col-3 p-0 mb-3" :href="'/admin/test/edit/'+item.id"> <img src="/images/settings.png" alt="" style="width: 16px;"> </a>
                         </div>
                        </div>
+                       <a class="btn btn-sm btn-info rounded-0 col text-light" href="/admin/create/test">Создать тест</a>
                     </div>
                 </div>
             </div>
@@ -63,7 +64,7 @@
                     <div class="modal-header">
                         Добавить вопрос
                     </div>
-                    <question></question>
+                    <question :test_id="selectedTestData.id"></question>
                 </div>
             </div>
         </div>
@@ -90,52 +91,54 @@
             this.gets()
         },
         methods: {
-            getCountedTest:function(){
-                axios.get("api/admin/getCount").then((Response)=>{
-                    this.testBaseData = Response.data;
-                }).catch((error)=>{
-                    console.log(error)
-                })
-            },
+            // getCountedTest:function(){
+            //     axios.get("/api/admin/getCount").then((Response)=>{
+            //         this.testBaseData = Response.data;
+            //     }).catch((error)=>{
+            //         console.log(error)
+            //     })
+            // },
             gets: function(){
                 axios.get('/api/admin/get').then((response)=>{
                     this.getData = response.data
-                    this.selectTest(1)
+                    //console.log(this.getData.tests)
+                    this.selectTest(this.getData.tests[0].id)
                 }).catch(function(error){
-                    console.log("!!!!! ERROR !!!! function get STATUS CODE=" + error.response.status +';  message: ' + error.response.data.message)
+                    console.log("!!!!! ERROR !!!! function get STATUS CODE=" + error +';  message: ' + error)
                 })
             },
  
             selectTest: function (i) {
                 let url = "/api/admin/test/get/"+i;
                 axios.get(url).then((response)=>{
-                    this.selectedTestData = response.data[0]
+                    this.selectedTestData = response.data.test
+                    console.log(response.data)
                 }).catch((error)=>{
-                    console.log("!!!!! ERROR !!!! function store persona STATUS CODE=" + error.response.status +';  message: ' + error.response.data.message)
+                    console.error("!!!!! ERROR !!!! function selectTest STATUS CODE=" + error +';  message: ' + error)
                 })
             },
-            getAnswers: function () {
-                let ret = [];
-                for(let i = 1; i <= this.answers.length; i++){
-                    let answer = $("#ques_test"+i).val();
-                    let right = $("input[id=ques_test_right"+i+"]").is(":checked");
-                    let rs = {
-                        'answer': answer,
-                        'right': right
-                    }
-                    ret.push(rs)
-                }
-                return ret;
-            },
+            // getAnswers: function () {
+            //     let ret = [];
+            //     for(let i = 1; i <= this.answers.length; i++){
+            //         let answer = $("#ques_test"+i).val();
+            //         let right = $("input[id=ques_test_right"+i+"]").is(":checked");
+            //         let rs = {
+            //             'answer': answer,
+            //             'right': right
+            //         }
+            //         ret.push(rs)
+            //     }
+            //     return ret;
+            // },
 
-            chBox: function (i) {
-                if(i == "quest_count"){
-                    this.testCount = $("input[name="+i+"]:checked").val();
-                }
-                if(i == "test_duration"){
-                    this.testDuration = $("input[name="+i+"]:checked").val();
-                }
-            }
+            // chBox: function (i) {
+            //     if(i == "quest_count"){
+            //         this.testCount = $("input[name="+i+"]:checked").val();
+            //     }
+            //     if(i == "test_duration"){
+            //         this.testDuration = $("input[name="+i+"]:checked").val();
+            //     }
+            // }
 
         },
 

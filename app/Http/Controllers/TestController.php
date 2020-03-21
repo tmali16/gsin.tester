@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use App\Question;
 use App\Test;
 use App\Answer;
@@ -86,13 +87,13 @@ class TestController extends Controller
 
         $test = Test::where('id', $id)->first();
         $settings = Settings::where("test_id", $test->id)->first();
-        if($this->validate($request, $rules, [])){            
+        if($this->validate($request, $rules, [])){
             $test->name_kg = $name_kg;
             $test->name_ru = $name_ru;
             $test->description_kg = $descript_kg;
             $test->description_ru = $descript_ru;
             //$test->user_id =\Auth::id();
-            $test->update();                
+            $test->update();
             $settings->quest_random = $quest_random;
             $settings->quest_count = $quest_count_num;
             $settings->answer_random = $answer_random;
@@ -100,7 +101,7 @@ class TestController extends Controller
             $settings->test_id = $test->id;
             $settings->update();
         }
-        return redirect()->to("/admin/test/list");        
+        return redirect()->back();
     }
     public function TestList()
     {
@@ -122,14 +123,15 @@ class TestController extends Controller
         $ret = [            
             'type' =>$type,
             'question'=>$question,
-            'tests' =>$test            
+            'tests' =>$test
         ];
         return json_encode($ret, JSON_PRETTY_PRINT);
     }
     public function tests(Request $request, $id)
     {
-        $tsting = Tsting::where("_id", $id)->first();
-        $test = Test::where("id",  $tsting->id)->with(["Question.Answers"])->first();
+        
+        //$tsting = Tsting::where("_id", $id)->first();
+        $test = Test::where("id",  $id)->with(["Question.Answers"])->first();
         $setting = Settings::where('test_id', $test->id)->first();
         return ["settings"=>$setting, "test"=>$test];
     }
@@ -147,8 +149,8 @@ class TestController extends Controller
     }
     public function getTestforUser(Request $request)
     {
-        $id = $request->id;
-        $user = Tsting::where("_id", $id)->first();
+        $test_id = $request->id;
+        $user = Tsting::where("_id", $test_id)->first();
         $settings = $user->test->Settings;
         $test = Test::where("id", $user->test_id)->first();        
         if($settings->quest_random == 1){
@@ -170,15 +172,16 @@ class TestController extends Controller
     }
     public function start_test(Request $request, $id)
     {
-        
-        return view("index.test", ["user_id"=>$id]);
+        $test_id = Tsting::where("_id", $id)->first();
+        //Session::put("start_time", now());
+        $request->session()->put("start_time", date("H:i:s"));
+        return view("index.test", ["test_id"=>$test_id->test_id, "user_id"=>$test_id->id, "test_name"=> $test_id->test->name_ru]);
     }
     public function store(Request $request, $id)
     {
-        $quest_id = $request->quest_id;
-        $answer_id = $request->answer_id;
-        $test_id = $request->test_id;
+        $data = $request->answer;
+        
 
-        return;
+        return $data;
     }
 }

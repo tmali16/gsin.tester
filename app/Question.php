@@ -9,7 +9,7 @@ class Question extends Model
     //
     public $timestamps = false;
 
-    public function Answers()
+    public function answers()
     {
         return $this->hasMany("App\Answer","answer_id");
     }

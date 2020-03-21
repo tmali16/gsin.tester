@@ -20,8 +20,7 @@
 		    <div class="timer">{{ time | prettify }}</div>
         `,
         props: [
-            'time',
-            
+            'time',            
         ],
         data() {
             return {
@@ -61,7 +60,6 @@
                                 this.time--
                             } else {
                                 clearInterval(this.timer)
-                                this.sound.play()
                                 this.reset()
                             }
                     }, 1000 )

@@ -22,7 +22,7 @@ Index page
                                 {{$errors->first()}}
                             </div>
                         @endif
-                        <form action="{{route("chckUser")}}" method="get">
+                        <form action="{{route('chckUser')}}" method="get">
                             @csrf
                             <label for="id">Введите Ваш код:</label>
                             <div class="form-group">

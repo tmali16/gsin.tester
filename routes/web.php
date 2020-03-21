@@ -16,6 +16,7 @@ Route::get('/chckTesting', "IndexController@chckUser")->name("chckUser");
 
 Route::get('/welcome/{id}', 'IndexController@welcome')->name('welcome_page');
 Route::get("/start/{id}", "TestController@start_test");
+Route::get("/report/{id{", "QuestController@report_test");
 
 
 Route::get('admin/', "AdminController@Index")->name('admin_index');

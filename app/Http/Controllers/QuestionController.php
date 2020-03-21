@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use App\Question;
 use App\Answer;
@@ -42,22 +42,43 @@ class QuestionController extends Controller
                             ));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, $id)
     {
-        $data = $request->datas;        
-        $test_user = Tsting::where("test_id", $test_id)->first();
+        $data = $request->answer;
+        $start_date = $request->session()->get("start_time");
+        $end_time = date("H:i:s");
+        $test_user = Tsting::where("test_id", $id)->first();
+        $test = $test_user->test;
+        $point = 0;
+        $store_data = [
+            "test"=> $test->name_kg, 
+            "full name"=> $test_user->fn . " " . $test_user->mn . " " . $test_user->ln,
+            "start"=>$start_date,
+            "end"=>date("H:i:s"),
+            "date"=>date("d.m.Y"),
+            "duration"=> $this->duration($start_date, $end_time),
+            "code"=> $test_user->_id,
+            "test"=>[]];
         foreach ($data as $key => $value) {
-            dd($value);
+            $q_id = $value["question_id"];
+            $a_id = $value["answer_id"];
+            $answer = Answer::where("id", $a_id)->where("answer_id", $q_id)->first();
+            if($answer->right == 1){
+                $point = $point + 1;
+            }
+            $s_j = array("answer"=>$answer->answer, "question"=> $answer->question->question_ru, "right"=>$answer->right);
+            $store_data["test"][] = $s_j;
         }
+        $store_data["right"]= $point;
+        $store_data["wrong"]= count($data) - $point;
         $cur = $test_user->answers;
-        if(strlen($cur) <= 3){
-            $test_user->answers = json_encode($tst, JSON_PRETTY_PRINT);
+        if($point > 0){
+            $test_user->point = $point;
+            $test_user->answers = json_encode($store_data);
             $test_user->update();
-        }else{
-            $cur = json_decode($test_user->answers, true);
         }
 
-        return collect($cur);
+        return redirect("/report/$test_user->_id");
     }
 
     public function addAnswer(Request $request)
@@ -65,6 +86,18 @@ class QuestionController extends Controller
         $data = session()->get('test');
         // $data = $request->session()->all();
         dd($data);
+    }
+    function duration($st, $e){
+        $start = Carbon::parse($st);
+        $end = Carbon::parse($e);
+        $minute = $end->diffInMinutes($start);
+        return $minute;
+    }
+    public function report_test(Request $request, $id)
+    {
+        $user_id = $id;
+        $user = Tsting::where("_id", $user_id)->first();
+        return view("index.report", ["data"=>json_decode($user->answers, true)]);
     }
 
 }

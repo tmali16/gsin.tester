@@ -1978,8 +1978,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['user_id'],
+  props: ['test_id', 'user_id'],
   data: function data() {
     return {
       test: [],
@@ -1989,7 +1990,10 @@ __webpack_require__.r(__webpack_exports__);
       currQuest: [],
       answerID: null,
       answers: [],
-      settings: []
+      settings: [],
+      options: {
+        autostart: true
+      }
     };
   },
   mounted: function mounted() {
@@ -1999,38 +2003,55 @@ __webpack_require__.r(__webpack_exports__);
     getQuestion: function getQuestion() {
       var _this = this;
 
-      axios.get("/api/admin/test/get/" + this.user_id).then(function (response) {
+      axios.get("/api/admin/test/get/" + this.test_id).then(function (response) {
         _this.test = response.data.test;
         _this.settings = response.data.settings;
         _this.countQuest = _this.test.question.length;
 
         _this.currentTest(_this.active);
       })["catch"](function (error) {
-        toastr.error(error.response);
+        toastr.error("Error get Question from server message :" + error);
       });
     },
     otvet: function otvet(question_id) {
+      var check = 1;
       this.currentTest(this.active);
       this.questAnswer();
 
-      if (this.answers.length < this.settings.quest_count) {
+      if (!check || this.answers.length == this.test.question.length - 1) {
         this.answers.push({
           'question_id': question_id,
           'answer_id': this.answerID
         });
+
+        if (this.answers.length < this.settings.quest_count - 1 || this.answers.length >= this.test.question.length) {
+          check = 1;
+        }
+
+        console.log("== with settings ==");
+        console.log(this.answers);
+        console.log(this.answers.length + " == End settings == " + this.settings.quest_count);
+      } else if (this.settings.quest_count == null && this.answers.length < this.test.question.length) {
+        this.answers.push({
+          'question_id': question_id,
+          'answer_id': this.answerID
+        });
+        console.log("== push if null ==");
       } else {
-        this.sendAnswer(this.answers, this.test.id);
+        this.sendAnswer(this.answers, this.test_id);
       }
+
+      this.countQuest = this.test.question.length;
+      this.test.question.splice(this.active - 1, 1);
     },
-    sendAnswer: function sendAnswer(data, test_id) {
+    sendAnswer: function sendAnswer(dats, tst_id) {
       var _this2 = this;
 
       axios({
         method: "POST",
         url: "/api/test/answer/" + this.user_id,
         data: {
-          data: data,
-          test_id: test_id
+          answer: dats
         }
       }).then(function (response) {
         _this2.test.question.splice(_this2.active - 1, 1);
@@ -2048,10 +2069,17 @@ __webpack_require__.r(__webpack_exports__);
       this.active = newAct || newInd;
     },
     currentTest: function currentTest(id) {
-      this.currQuest = this.test.question[this.active - 1];
+      if (this.currQuest.length != 0) {
+        this.currQuest = this.test.question[this.active - 1];
+      }
+    },
+    timerStart: function timerStart() {
+      this.$timer.start('log');
     },
     questAnswer: function questAnswer() {
-      this.answerID = $("input[name=AnswerRadios" + this.currQuest.id + "]:checked").val();
+      if (this.currQuest.length != 0) {
+        this.answerID = $("input[name=AnswerRadios" + this.currQuest.id + "]:checked").val();
+      }
     }
   }
 });
@@ -2113,7 +2141,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
+  props: ["test_id"],
   data: function data() {
     return {
       testBaseData: 0,
@@ -2124,13 +2154,11 @@ __webpack_require__.r(__webpack_exports__);
       testCount: 1,
       testDuration: 1,
       question_ru: "",
-      question_kg: ""
+      question_kg: "",
+      selectedTestData: []
     };
   },
-  mounted: function mounted() {
-    this.gets();
-    console.log("mounded");
-  },
+  mounted: function mounted() {},
   methods: {
     getCountedTest: function getCountedTest() {
       var _this = this;
@@ -2141,19 +2169,8 @@ __webpack_require__.r(__webpack_exports__);
         console.log(error);
       });
     },
-    gets: function gets() {
-      var _this2 = this;
-
-      axios.get('/api/admin/get').then(function (response) {
-        _this2.getData = response.data;
-
-        _this2.selectTest(1);
-      })["catch"](function (error) {
-        console.log("!!!!! ERROR !!!! function get STATUS CODE=" + error.response.status + ';  message: ' + error.response.data.message);
-      });
-    },
     pushAnswer: function pushAnswer() {
-      var _this3 = this;
+      var _this2 = this;
 
       axios({
         url: "/api/admin/question/new",
@@ -2162,35 +2179,19 @@ __webpack_require__.r(__webpack_exports__);
           question_kg: this.question_kg,
           question_ru: this.question_ru,
           answers: this.getAnswers(),
-          test_id: this.selectedTestData.id
+          test_id: this.test_id
         }
       }).then(function (response) {
-        if (response.data.status == 'ok') {
-          _this3.retStatus = response.data;
-          toastr.info(response.data.message);
-        } else {
-          _this3.retStatus = response.data;
-          toastr.error(response.data.message);
-        }
+        _this2.retStatus = response.data;
+        toastr.info(response.data.message);
       })["catch"](function (error) {
-        console.log("!!!!! ERROR !!!! function store persona STATUS CODE=" + error.response.status + ';  message: ' + error.response.data.message);
+        console.log("!!!!! ERROR !!!! function pushAnswer   message: " + error.response.data.message);
       });
     },
     addAnswer: function addAnswer() {
       if (this.answers.length <= 5) {
         this.answers.push(this.answers[this.answers.length - 1] + 1);
       }
-    },
-    selectTest: function selectTest(i) {
-      var _this4 = this;
-
-      var url = "/api/admin/test/get/" + i;
-      axios.get(url).then(function (response) {
-        _this4.selectedTestData = response.data[0];
-      })["catch"](function (error) {
-        console.log(url);
-        console.log("!!!!! ERROR !!!! function store persona STATUS CODE=" + error.response.status + ';  message: ' + error.response.data.message);
-      });
     },
     getAnswers: function getAnswers() {
       var ret = [];
@@ -2206,58 +2207,6 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       return ret;
-    },
-    getSettings: function getSettings(i) {
-      var _this5 = this;
-
-      axios.get("/api/admin/test/settings/get/" + i).then(function (response) {
-        _this5.testSettings = response.data.settings;
-        _this5.quest_count = _this5.testSettings.quest_count;
-        _this5.quest_random = _this5.testSettings.quest_random;
-        _this5.answer_random = _this5.testSettings.answer_random;
-        _this5.test_duration = _this5.testSettings.duration;
-        _this5.testCount = _this5.quest_count == 0 ? 1 : 0;
-        _this5.testDuration = _this5.test_duration == 0 ? 1 : 0;
-        toastr.success("Загружено", 'Настройки');
-        toastr.options.progressBar = true;
-        toastr.options.hideMethod = 'slideUp';
-      })["catch"](function (error) {
-        toastr.error(error.response.status);
-      });
-    },
-    showSettings: function showSettings(i) {
-      $("#settingsTest").modal("show");
-      this.getSettings(i);
-    },
-    saveSettings: function saveSettings(i) {
-      var _this6 = this;
-
-      axios({
-        url: "/api/admin/test/settings/save/" + i,
-        method: "POST",
-        data: {
-          quest_count: this.quest_count,
-          quest_random: this.quest_random,
-          answer_random: this.answer_random,
-          duration: this.test_duration,
-          test_id: i,
-          id: this.testSettings.id
-        }
-      }).then(function (response) {
-        if (response.data.status == "ok") {
-          _this6.quest_count = 0;
-          _this6.quest_random = 0;
-          _this6.answer_random = 0;
-          _this6.test_duration = 0;
-          _this6.testDuration = 1;
-          _this6.testCount = 1;
-          _this6.retStatus = response.data;
-          toastr.info(_this6.retStatus.message, "Сообшение");
-          $("#settingsTest").modal("hide");
-        }
-      })["catch"](function (error) {
-        toastr.error(error.response.status, 'Inconceivable!');
-      });
     },
     chBox: function chBox(i) {
       if (i == "quest_count") {
@@ -2413,6 +2362,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
@@ -2431,60 +2381,56 @@ __webpack_require__.r(__webpack_exports__);
     this.gets();
   },
   methods: {
-    getCountedTest: function getCountedTest() {
+    // getCountedTest:function(){
+    //     axios.get("/api/admin/getCount").then((Response)=>{
+    //         this.testBaseData = Response.data;
+    //     }).catch((error)=>{
+    //         console.log(error)
+    //     })
+    // },
+    gets: function gets() {
       var _this = this;
 
-      axios.get("api/admin/getCount").then(function (Response) {
-        _this.testBaseData = Response.data;
-      })["catch"](function (error) {
-        console.log(error);
-      });
-    },
-    gets: function gets() {
-      var _this2 = this;
-
       axios.get('/api/admin/get').then(function (response) {
-        _this2.getData = response.data;
+        _this.getData = response.data; //console.log(this.getData.tests)
 
-        _this2.selectTest(1);
+        _this.selectTest(_this.getData.tests[0].id);
       })["catch"](function (error) {
-        console.log("!!!!! ERROR !!!! function get STATUS CODE=" + error.response.status + ';  message: ' + error.response.data.message);
+        console.log("!!!!! ERROR !!!! function get STATUS CODE=" + error + ';  message: ' + error);
       });
     },
     selectTest: function selectTest(i) {
-      var _this3 = this;
+      var _this2 = this;
 
       var url = "/api/admin/test/get/" + i;
       axios.get(url).then(function (response) {
-        _this3.selectedTestData = response.data[0];
+        _this2.selectedTestData = response.data.test;
+        console.log(response.data);
       })["catch"](function (error) {
-        console.log("!!!!! ERROR !!!! function store persona STATUS CODE=" + error.response.status + ';  message: ' + error.response.data.message);
+        console.error("!!!!! ERROR !!!! function selectTest STATUS CODE=" + error + ';  message: ' + error);
       });
-    },
-    getAnswers: function getAnswers() {
-      var ret = [];
+    } // getAnswers: function () {
+    //     let ret = [];
+    //     for(let i = 1; i <= this.answers.length; i++){
+    //         let answer = $("#ques_test"+i).val();
+    //         let right = $("input[id=ques_test_right"+i+"]").is(":checked");
+    //         let rs = {
+    //             'answer': answer,
+    //             'right': right
+    //         }
+    //         ret.push(rs)
+    //     }
+    //     return ret;
+    // },
+    // chBox: function (i) {
+    //     if(i == "quest_count"){
+    //         this.testCount = $("input[name="+i+"]:checked").val();
+    //     }
+    //     if(i == "test_duration"){
+    //         this.testDuration = $("input[name="+i+"]:checked").val();
+    //     }
+    // }
 
-      for (var i = 1; i <= this.answers.length; i++) {
-        var answer = $("#ques_test" + i).val();
-        var right = $("input[id=ques_test_right" + i + "]").is(":checked");
-        var rs = {
-          'answer': answer,
-          'right': right
-        };
-        ret.push(rs);
-      }
-
-      return ret;
-    },
-    chBox: function chBox(i) {
-      if (i == "quest_count") {
-        this.testCount = $("input[name=" + i + "]:checked").val();
-      }
-
-      if (i == "test_duration") {
-        this.testDuration = $("input[name=" + i + "]:checked").val();
-      }
-    }
   }
 });
 
@@ -38543,15 +38489,19 @@ var render = function() {
   return _c("div", { staticClass: "container-fluid p-0 h-100 bg-dark" }, [
     _c("div", { staticClass: "row h-100 justify-content-center " }, [
       _c("div", { staticClass: "col-md-8 d-flex align-items-center " }, [
-        _c("div", { staticClass: "card rounded-0 w-100  h-75" }, [
+        _c("div", { staticClass: "card rounded-0 w-100  h-50" }, [
           _c("div", { staticClass: "card-body" }, [
             _c(
               "div",
               {
-                staticClass: "w-100 mt-1 mb-3 text-center ",
+                staticClass: "w-100 d-flex justify-content-start ",
                 staticStyle: { "border-bottom": "1px solid" }
               },
               [
+                _c("label", { staticClass: "col h3", attrs: { for: "" } }, [
+                  _vm._v(_vm._s(_vm.test.name_ru))
+                ]),
+                _vm._v(" "),
                 _c("span", { staticClass: " badge budge-success" }, [
                   _vm._v(_vm._s(_vm.active + " / " + _vm.countQuest))
                 ])
@@ -38992,6 +38942,15 @@ var render = function() {
                 })
               ],
               2
+            ),
+            _vm._v(" "),
+            _c(
+              "a",
+              {
+                staticClass: "btn btn-sm btn-info rounded-0 col text-light",
+                attrs: { href: "/admin/create/test" }
+              },
+              [_vm._v("Создать тест")]
             )
           ])
         ])
@@ -39108,7 +39067,7 @@ var render = function() {
                   )
                 ]),
                 _vm._v(" "),
-                _c("question")
+                _c("question", { attrs: { test_id: _vm.selectedTestData.id } })
               ],
               1
             )
@@ -52126,8 +52085,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! D:\ospanel\OSPanel\domains\gsin.tester\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! D:\ospanel\OSPanel\domains\gsin.tester\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\OSPanel\domains\gsin.tester\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\OSPanel\domains\gsin.tester\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

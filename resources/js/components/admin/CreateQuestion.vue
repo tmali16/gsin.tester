@@ -3,6 +3,7 @@
             {{retStatus.message}}
             <div class="form-group col " v-if="false">
                 <label for="ques_test">Тип вопроса</label>
+                {{test_id}}
                 <select id="ques_test" class="form-control">
                     <option selected>Choose...</option>
                 </select>
@@ -46,6 +47,9 @@
 
 <script>
     export default {
+        props:[
+            "test_id"
+        ],
         data() {
             return {
                 testBaseData: 0,
@@ -57,12 +61,11 @@
                 testDuration: 1,
                 question_ru: "",
                 question_kg: "",
-
+                selectedTestData: []
             }
         },
         mounted() {
-            this.gets()
-            console.log("mounded")
+
         },
         methods: {
             getCountedTest:function(){
@@ -72,15 +75,8 @@
                     console.log(error)
                 })
             },
-            gets: function(){
-                axios.get('/api/admin/get').then((response)=>{
-                    this.getData = response.data
-                    this.selectTest(1)
-                }).catch(function(error){
-                    console.log("!!!!! ERROR !!!! function get STATUS CODE=" + error.response.status +';  message: ' + error.response.data.message)
-                })
-            },
-           pushAnswer: function () {
+
+            pushAnswer: function () {
                 axios({
                     url: "/api/admin/question/new",
                     method: "POST",
@@ -88,18 +84,13 @@
                         question_kg: this.question_kg,
                         question_ru: this.question_ru,
                         answers: this.getAnswers(),
-                        test_id: this.selectedTestData.id
+                        test_id: this.test_id
                     }
                 }).then((response)=>{
-                    if(response.data.status == 'ok'){
-                        this.retStatus = response.data;
-                        toastr.info(response.data.message)
-                    }else{
-                        this.retStatus = response.data
-                        toastr.error(response.data.message)
-                    }
+                    this.retStatus = response.data;
+                    toastr.info(response.data.message)                    
                 }).catch((error)=>{
-                    console.log("!!!!! ERROR !!!! function store persona STATUS CODE=" + error.response.status +';  message: ' + error.response.data.message)
+                    console.log("!!!!! ERROR !!!! function pushAnswer   message: " + error.response.data.message)
                 })
             },
             addAnswer:function(){
@@ -107,15 +98,7 @@
                     this.answers.push(this.answers[this.answers.length - 1] +1);
                 }
             },
-            selectTest: function (i) {
-                let url = "/api/admin/test/get/"+i;
-                axios.get(url).then((response)=>{
-                    this.selectedTestData = response.data[0]
-                }).catch((error)=>{
-                    console.log(url)
-                    console.log("!!!!! ERROR !!!! function store persona STATUS CODE=" + error.response.status +';  message: ' + error.response.data.message)
-                })
-            },
+
             getAnswers: function () {
                 let ret = [];
                 for(let i = 1; i <= this.answers.length; i++){
@@ -129,54 +112,7 @@
                 }
                 return ret;
             },
-            getSettings: function (i) {
-              axios.get("/api/admin/test/settings/get/"+i).then((response)=>{
-                  this.testSettings = response.data.settings
-                  this.quest_count = this.testSettings.quest_count
-                  this.quest_random = this.testSettings.quest_random
-                  this.answer_random = this.testSettings.answer_random
-                  this.test_duration = this.testSettings.duration
-                  this.testCount = (this.quest_count == 0 ? 1 : 0)
-                  this.testDuration = (this.test_duration == 0 ? 1 : 0)
-                  toastr.success("Загружено", 'Настройки')
-                  toastr.options.progressBar = true;
-                  toastr.options.hideMethod = 'slideUp';
-              }).catch((error)=>{
-                  toastr.error(error.response.status)
-              })  
-            },
-            showSettings: function (i) {
-                $("#settingsTest").modal("show")
-                this.getSettings(i)
-            },
-            saveSettings: function (i) {
-              axios({
-                url: "/api/admin/test/settings/save/"+i,
-                method: "POST",
-                data:{
-                    quest_count: this.quest_count,
-                    quest_random: this.quest_random,
-                    answer_random: this.answer_random,
-                    duration: this.test_duration,
-                    test_id: i,
-                    id: this.testSettings.id
-                }
-              }).then((response)=>{
-                if(response.data.status == "ok"){
-                    this.quest_count = 0
-                    this.quest_random = 0
-                    this.answer_random = 0
-                    this.test_duration = 0
-                    this.testDuration = 1
-                    this.testCount = 1
-                    this.retStatus = response.data
-                    toastr.info(this.retStatus.message, "Сообшение");
-                    $("#settingsTest").modal("hide")
-                }
-              }).catch((error)=>{
-                  toastr.error(error.response.status, 'Inconceivable!')
-              })
-            },
+
             chBox: function (i) {
                 if(i == "quest_count"){
                     this.testCount = $("input[name="+i+"]:checked").val();
